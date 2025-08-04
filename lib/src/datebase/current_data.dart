@@ -9,11 +9,11 @@ Users? currentUsers;
 
 bool isUpdate = false;
 
-const nameApp = 'Company Bordado';
+const nameApp = 'Tatami bordados';
 
 const String pathLocal = 'bordado_backend';
 
-const logoApp = 'assets/logo_lu.png';
+const logoApp = 'assets/tatami_logo_completo.png';
 
 const firmaLu = "assets/logo_lu.png";
 
@@ -115,14 +115,14 @@ class EmpresaLocal {
 
 EmpresaLocal currentEmpresa = EmpresaLocal(
     adressEmpressa:
-        'C. Beller #78, Puerto Plata 57000, Puerto Plata, República Dominicana',
-    celularEmpresa: '829-733-7630',
-    nombreEmpresa: 'Tejidos Tropical',
-    oficinaEmpres: '(829) 733-7630',
-    rncEmpresa: 'xxxxx-x',
-    telefonoEmpresa: '829-733-7630',
+        'Plaza Zona Rosa, Plaza Olimpica, Santiago de los caballeros, República Dominicana',
+    celularEmpresa: '829-971-3536',
+    nombreEmpresa: 'Tatami bordados',
+    oficinaEmpres: '(829)-971-3536',
+    rncEmpresa: '132086198',
+    telefonoEmpresa: '(829)-581-3536',
     nCFEmpresa: 'A0100000001',
-    correoEmpresa: 'Tejidos_Tropical_***@**.com');
+    correoEmpresa: 'Tatamibordados35@gmail.com');
 
 // user : upload
 // clave : tbsyomsyaasinjnjyeyye
@@ -205,8 +205,6 @@ Map<String, IconData> priorityIcons = {
 //       return 'NORMAL';
 //   }
 // }
-
-
 
 // Función para obtener el color según la prioridad
 Color getColorPriority(String priorityName) {

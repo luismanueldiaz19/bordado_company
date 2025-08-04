@@ -73,7 +73,7 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
 icons_launcher:
-  image_path: "assets/logo_lu.png"
+  image_path: "assets/tatami_logo_completo.png"
   platforms:
     android:
       enable: true
