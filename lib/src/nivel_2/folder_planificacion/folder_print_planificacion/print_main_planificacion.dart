@@ -95,7 +95,7 @@ class PrintMainPlanificacion {
 
     final data = list.map((item) {
       return [
-        getClientePorPrioridad(item.priority ?? ''),
+        (item.priority ?? ''),
         item.department ?? 'N/A',
         (item.statu != null && item.statu!.length > 25)
             ? '${item.statu!.substring(0, 25)}...'

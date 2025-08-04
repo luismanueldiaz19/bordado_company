@@ -36,13 +36,13 @@ class _ScreenRecordPlanificacionState extends State<ScreenRecordPlanificacion> {
   }
 
   Future getRecord(String isDone, date1, date2) async {
-    final res = await httpRequestDatabase(
-        selectProductoPlanificacionLastRecordByDate,
-        {'is_done': isDone, 'date1': date1, 'date2': date2});
-    listRecord = planificacionItemFromJson(res.body);
-    listRecordFilter = listRecord;
-    _options = PlanificacionItem.getUniqueDepartmentList(listRecord);
-    setState(() {});
+    // final res = await httpRequestDatabase(
+    //     selectProductoPlanificacionLastRecordByDate,
+    //     {'is_done': isDone, 'date1': date1, 'date2': date2});
+    // listRecord = planificacionItemFromJson(res.body);
+    // listRecordFilter = listRecord;
+    // _options = PlanificacionItem.getUniqueDepartmentList(listRecord);
+    // setState(() {});
   }
 
   void _searchingFilter(String val) {

@@ -2,17 +2,17 @@ import 'dart:convert';
 import 'package:animate_do/animate_do.dart';
 import 'package:bordado_company/src/services/api_services.dart';
 import 'package:flutter/material.dart';
-import '../../model/orden_work.dart';
-import '../../util/show_mesenger.dart';
+import '../model/orden_work.dart';
+import '../util/show_mesenger.dart';
 import '/src/datebase/current_data.dart';
 import '/src/datebase/url.dart';
 import '/src/model/department.dart';
-import '/src/nivel_2/forder_sublimacion/widgets/card_sublimacion.dart';
+import '../widgets/card_sublimacion.dart';
 import '/src/util/commo_pallete.dart';
 import '/src/util/helper.dart';
 import '/src/widgets/validar_screen_available.dart';
-import '../../widgets/loading.dart';
-import '../../widgets/pick_range_date.dart';
+import '../widgets/loading.dart';
+import '../widgets/pick_range_date.dart';
 
 class ScreenProduccionDepartment extends StatefulWidget {
   const ScreenProduccionDepartment({super.key, required this.current});
@@ -41,18 +41,24 @@ class _ScreenProduccionDepartmentState
   @override
   void initState() {
     super.initState();
-    getWork(_firstDate, _secondDate);
+    getWork();
   }
 
-  Future getWork(date1, date2) async {
+  Future getWork({bool? isRecord = false}) async {
     setState(() {
       listFilter.clear();
       list.clear();
     });
 
-    final valueBody = await _apiService.httpEnviaMap(
-        'http://$ipLocal/$pathLocal/produccion/get_produccion_by_depart.php',
-        {'id_depart': widget.current.id});
+    String url = isRecord!
+        ? 'http://$ipLocal/$pathLocal/produccion/get_produccion_by_depart_by_date.php'
+        : 'http://$ipLocal/$pathLocal/produccion/get_produccion_by_depart.php';
+
+    final valueBody = await _apiService.httpEnviaMap(url, {
+      'id_depart': widget.current.id,
+      'start_date_from': _firstDate,
+      'start_date_to': _secondDate,
+    });
 
     final value = json.decode(valueBody);
 
@@ -76,6 +82,8 @@ class _ScreenProduccionDepartmentState
     // setState(() {});
   }
 
+  //get_produccion_by_depart_by_date
+
   Future deleteFromSublima(id) async {
     bool? value = await showConfirmationDialogOnyAsk(context, eliminarMjs);
     if (value != null && value) {
@@ -93,92 +101,8 @@ class _ScreenProduccionDepartmentState
     final r = json.decode(value);
     showScaffoldMessenger(
         context, r['message'], r['success'] ? Colors.green : Colors.red);
-    getWork(_firstDate, _secondDate);
+    getWork();
   }
-
-  ///eliminar_producion_campos
-
-  // tomarUsuariosList(List<Sublima> itemList) {
-  //   List<Sublima> users = [...itemList];
-  //   List<String> uniqueNames =
-  //       users.toSet().map((user) => user.fullName ?? 'N/A').toList();
-  //   List<String> nombres = uniqueNames.toSet().toList();
-  //   return nombres;
-  // }
-
-  // tomarTrabajosList(List<Sublima> itemList) {
-  //   List<Sublima> users = [...itemList];
-  //   List<String> uniqueNames =
-  //       users.toSet().map((user) => user.nameWork ?? 'N/A').toList();
-  //   List<String> nombresUnicos = uniqueNames.toSet().toList();
-  //   return nombresUnicos;
-  // }
-
-  // Future searchingEmploye(String? empleado) async {
-  //   setState(() {
-  //     listFilter = List.from(list
-  //         .where((x) => x.usuarioId!
-  //             .toUpperCase()
-  //             .contains(empleado.toString().toUpperCase()))
-  //         .toList());
-  //   });
-  // }
-
-  // Future searchingTypeWork(String? type) async {
-  //   setState(() {
-  //     listFilter = List.from(list
-  //         .where((x) =>
-  //             x.nameTrabajo!.toUpperCase().contains(type.toString().toUpperCase()))
-  //         .toList());
-  //   });
-  // }
-
-  // Future searchingWorkAndEmpleado() async {
-  //   setState(() {
-  //     listFilter = List.from(list
-  //         .where((x) =>
-  //             x.nameWork!
-  //                 .toUpperCase()
-  //                 .contains(workPicked.toString().toUpperCase()) &&
-  //             x.fullName!
-  //                 .toUpperCase()
-  //                 .contains(nombrePicked.toString().toUpperCase()))
-  //         .toList());
-  //   });
-  // }
-
-  // Future searchingCombine() async {
-  //   listFilter = List.from(list
-  //       .where((x) =>
-  //           x.fullName!.toUpperCase() == usuario.toString().toUpperCase() &&
-  //           x.nameWork!.toUpperCase() == typeTrabajo.toString().toUpperCase())
-  //       .toList());
-  //   setState(() {});
-  // }
-
-  // searching(String val) {
-  //   if (val.isNotEmpty) {
-  //     setState(() {
-  //       listFilter = List.from(list
-  //           .where((x) =>
-  //               x.ficha!.toUpperCase().contains(val.toString().toUpperCase()) ||
-  //               x.numOrden!
-  //                   .toUpperCase()
-  //                   .contains(val.toString().toUpperCase()) ||
-  //               x.codeUser!
-  //                   .toUpperCase()
-  //                   .contains(val.toString().toUpperCase()) ||
-  //               x.fullName!
-  //                   .toUpperCase()
-  //                   .contains(val.toString().toUpperCase()))
-  //           .toList());
-  //     });
-  //   } else {
-  //     setState(() {
-  //       listFilter = List.from(list);
-  //     });
-  //   }
-  // }
 
   String nombrePicked = '';
   String workPicked = '';
@@ -341,24 +265,10 @@ class _ScreenProduccionDepartmentState
                       _firstDate = date1.toString();
                       _secondDate = date2.toString();
                     });
-                    getWork(_firstDate, _secondDate);
+                    getWork(isRecord: true);
                   });
                 }),
           ),
-
-          // Container(
-          //   margin: const EdgeInsets.only(top: 25, right: 10),
-          //   child: IconButton(
-          //     icon: const Icon(Icons.help),
-          //     onPressed: () async {
-          //       Navigator.push(
-          //           context,
-          //           MaterialPageRoute(
-          //               builder: (context) => ScreenReportMaster(
-          //                   list: listFilter, isReport: true)));
-          //     },
-          //   ),
-          // ),
           Padding(
             padding: const EdgeInsets.only(right: 15),
             child: IconButton(
@@ -426,29 +336,29 @@ class _ScreenProduccionDepartmentState
                                   ),
                                 ),
                                 const SizedBox(height: 10),
-                                Container(
-                                  width: 200,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(50),
-                                    boxShadow: const [shadow],
-                                  ),
-                                  child: TextField(
-                                    onChanged: (value) => {},
-                                    decoration: InputDecoration(
-                                        hintText:
-                                            'Buscar', // Texto de ayuda más descriptivo
-                                        border: InputBorder
-                                            .none, // Mantiene sin borde el campo de texto
-                                        suffixIcon: Icon(Icons.search,
-                                            color: Colors.grey[600],
-                                            size:
-                                                24), // Estiliza el icono de búsqueda
-                                        contentPadding: const EdgeInsets.only(
-                                            left: 25, top: 10)),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
+                                // Container(
+                                //   width: 200,
+                                //   decoration: BoxDecoration(
+                                //     color: Colors.white,
+                                //     borderRadius: BorderRadius.circular(50),
+                                //     boxShadow: const [shadow],
+                                //   ),
+                                //   child: TextField(
+                                //     onChanged: (value) => {},
+                                //     decoration: InputDecoration(
+                                //         hintText:
+                                //             'Buscar', // Texto de ayuda más descriptivo
+                                //         border: InputBorder
+                                //             .none, // Mantiene sin borde el campo de texto
+                                //         suffixIcon: Icon(Icons.search,
+                                //             color: Colors.grey[600],
+                                //             size:
+                                //                 24), // Estiliza el icono de búsqueda
+                                //         contentPadding: const EdgeInsets.only(
+                                //             left: 25, top: 10)),
+                                //   ),
+                                // ),
+                                // const SizedBox(height: 10),
                                 const Divider(indent: 100, endIndent: 100),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -462,15 +372,15 @@ class _ScreenProduccionDepartmentState
                                         ),
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Piezas : ',
-                                        style: styte.bodyLarge?.copyWith(
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                    )
+                                    // Padding(
+                                    //   padding: const EdgeInsets.all(8.0),
+                                    //   child: Text(
+                                    //     'Piezas : ',
+                                    //     style: styte.bodyLarge?.copyWith(
+                                    //       color: Colors.black54,
+                                    //     ),
+                                    //   ),
+                                    // )
                                   ],
                                 )
                               ],

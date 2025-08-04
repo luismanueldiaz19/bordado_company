@@ -79,72 +79,72 @@ class _HomeIncidenciaResueltosState extends State<HomeIncidenciaResueltos> {
   List<ResumenEmpleado> listProductoPorEmpleado = [];
 
   Future getIncidenciaPorEmpleado() async {
-    String url = urls[0];
-    final res = await httpRequestDatabase(url,
-        {'estado': 'no resuelto', 'date1': _firstDate, 'date2': _secondDate});
+    // String url = urls[0];
+    // final res = await httpRequestDatabase(url,
+    //     {'estado': 'no resuelto', 'date1': _firstDate, 'date2': _secondDate});
 
-    var response = jsonDecode(res.body);
+    // var response = jsonDecode(res.body);
 
-    if (response['success']) {
-      print(jsonEncode(response['body']));
-      lisEmpleado = resumenEmpleadoFromJson(jsonEncode(response['body']));
-    }
+    // if (response['success']) {
+    //   print(jsonEncode(response['body']));
+    //   lisEmpleado = resumenEmpleadoFromJson(jsonEncode(response['body']));
+    // }
   }
 
   Future getIncidenciaPorDepartamento() async {
-    String url = urls[1];
-    final res = await httpRequestDatabase(url,
-        {'estado': 'no resuelto', 'date1': _firstDate, 'date2': _secondDate});
+    // String url = urls[1];
+    // final res = await httpRequestDatabase(url,
+    //     {'estado': 'no resuelto', 'date1': _firstDate, 'date2': _secondDate});
 
-    var response = jsonDecode(res.body);
+    // var response = jsonDecode(res.body);
 
-    if (response['success']) {
-      print(jsonEncode(response['body']));
-      lisPorDepartamento =
-          resumenEmpleadoFromJson(jsonEncode(response['body']));
-    }
+    // if (response['success']) {
+    //   print(jsonEncode(response['body']));
+    //   lisPorDepartamento =
+    //       resumenEmpleadoFromJson(jsonEncode(response['body']));
+    // }
   }
 
   Future getIncidenciaPorMes() async {
-    String url = urls[2];
-    final res = await httpRequestDatabase(url,
-        {'estado': 'no resuelto', 'date1': _firstDate, 'date2': _secondDate});
+    // String url = urls[2];
+    // final res = await httpRequestDatabase(url,
+    //     {'estado': 'no resuelto', 'date1': _firstDate, 'date2': _secondDate});
 
-    var response = jsonDecode(res.body);
+    // var response = jsonDecode(res.body);
 
-    if (response['success']) {
-      print(jsonEncode(response['body']));
-      lisPorMes = resumenEmpleadoFromJson(jsonEncode(response['body']));
-    }
+    // if (response['success']) {
+    //   print(jsonEncode(response['body']));
+    //   lisPorMes = resumenEmpleadoFromJson(jsonEncode(response['body']));
+    // }
   }
 
   Future getIncidenciaProductoPorMes() async {
-    String url = urls[3];
-    final res = await httpRequestDatabase(url,
-        {'estado': 'no resuelto', 'date1': _firstDate, 'date2': _secondDate});
+    // String url = urls[3];
+    // final res = await httpRequestDatabase(url,
+    //     {'estado': 'no resuelto', 'date1': _firstDate, 'date2': _secondDate});
 
-    var response = jsonDecode(res.body);
-    // print(res.body);
-    if (response['success']) {
-      print(jsonEncode(response['body']));
-      listProductoPorMes =
-          resumenEmpleadoFromJson(jsonEncode(response['body']));
-    }
+    // var response = jsonDecode(res.body);
+    // // print(res.body);
+    // if (response['success']) {
+    //   print(jsonEncode(response['body']));
+    //   listProductoPorMes =
+    //       resumenEmpleadoFromJson(jsonEncode(response['body']));
+    // }
   }
 
   Future getIncidenciaProductoPorEmpleado() async {
-    String url = urls[4];
-    final res = await httpRequestDatabase(url,
-        {'estado': 'no resuelto', 'date1': _firstDate, 'date2': _secondDate});
+    // String url = urls[4];
+    // final res = await httpRequestDatabase(url,
+    //     {'estado': 'no resuelto', 'date1': _firstDate, 'date2': _secondDate});
 
-    var response = jsonDecode(res.body);
-    // print(res.body);
-    if (response['success']) {
-      print(jsonEncode(response['body']));
-      listProductoPorEmpleado =
-          resumenEmpleadoFromJson(jsonEncode(response['body']));
-    }
-    setState(() {});
+    // var response = jsonDecode(res.body);
+    // // print(res.body);
+    // if (response['success']) {
+    //   print(jsonEncode(response['body']));
+    //   listProductoPorEmpleado =
+    //       resumenEmpleadoFromJson(jsonEncode(response['body']));
+    // }
+    // setState(() {});
   }
 
   Future deleteFromIncidencia(context, idListIncidencia) async {
@@ -199,22 +199,22 @@ class _HomeIncidenciaResueltosState extends State<HomeIncidenciaResueltos> {
     String? url =
         "http://$ipLocal/settingmat/admin/select/select_incidencia_test_by_date.php?estado=$estado&date1=$_firstDate&date2=$_secondDate";
 
-    final res = await httpRequestDatabaseGET(url);
-    // print(res.body);
-    if (res != null) {
-      var response = jsonDecode(res.body);
-      // print(res.body);
-      if (response['success']) {
-        listMain = incidenciaMainFromJson(jsonEncode(response['body']));
-        listMainFilter = listMain;
-        setState(() {});
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            backgroundColor: Colors.red,
-            content: Text(response['message']),
-            duration: const Duration(seconds: 1)));
-      }
-    }
+    // final res = await httpRequestDatabaseGET(url);
+    // // print(res.body);
+    // if (res != null) {
+    //   var response = jsonDecode(res.body);
+    //   // print(res.body);
+    //   if (response['success']) {
+    //     listMain = incidenciaMainFromJson(jsonEncode(response['body']));
+    //     listMainFilter = listMain;
+    //     setState(() {});
+    //   } else {
+    //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    //         backgroundColor: Colors.red,
+    //         content: Text(response['message']),
+    //         duration: const Duration(seconds: 1)));
+    //   }
+    // }
 
     // list = usuarioPermissionsFromJson(res.body);
     // listFilter = list;

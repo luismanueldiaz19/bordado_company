@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import '../compras/add_compra.dart';
 import '../compras/screen_compras.dart';
 import '../folder_inventario/salidas_inventario.dart';
-import '../nivel_2/folder_printer/add_plan_printer.dart';
-import '../nivel_2/folder_printer/admin_plan.dart';
-import '../nivel_2/folder_printer/screen_selector_department.dart';
+
 import '../nivel_2/pre_orden/add_pre_orden.dart';
 import '/src/datebase/current_data.dart';
 import '/src/folder_admin_user/add_user.dart';
@@ -14,14 +12,13 @@ import '/src/home.dart';
 import '/src/folder_incidencia_main/home_incidencia_resuelto.dart';
 import '/src/nivel_2/folder_planificacion/screen_planificacion_semanal.dart';
 import '/src/nivel_2/folder_reception/historia_record/list_report_intput_output.dart';
-import '/src/pages/sign_in/sign_in_login.dart';
+import '../sign_in_login.dart';
 import '/src/util/commo_pallete.dart';
 import '../folder_admin_permiso/screen_admin_permiso.dart';
 import '../folder_cliente_company/add_cliente.dart';
 import '../folder_incidencia_main/add_incidencia_main.dart';
 import '../folder_incidencia_main/screen_incidencia_current.dart';
 import '../folder_list_product/screen_list_product.dart';
-import '../folder_type_works/lista_tipo_trabajo.dart';
 import '../model/users.dart';
 import '../nivel_2/folder_planificacion/add_planificacion.dart';
 import '../widgets/button_menu_drawer.dart';
@@ -419,12 +416,12 @@ class _DrawerMenuCustomState extends State<DrawerMenuCustom> {
                             MyWidgetButton(
                                 icon: Icons.workspaces_outlined,
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ListaTipoTrabajos()),
-                                  );
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //       builder: (context) =>
+                                  //           const ListaTipoTrabajos()),
+                                  // );
                                 },
                                 textButton: 'Tipos de Trabajos'),
                           ],
@@ -457,22 +454,22 @@ class _DrawerMenuCustomState extends State<DrawerMenuCustom> {
                                 ? MyWidgetButton(
                                     icon: Icons.add,
                                     onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const AddPlanPrinter()));
+                                      // Navigator.push(
+                                      //     context,
+                                      //     MaterialPageRoute(
+                                      //         builder: (context) =>
+                                      //             const AddPlanPrinter()));
                                     },
                                     textButton: 'Agregar plan')
                                 : const SizedBox(),
                             MyWidgetButton(
                                 icon: Icons.list_alt_outlined,
                                 onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const ScreenSelectorDepartment()));
+                                  // Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //         builder: (context) =>
+                                  //             const ScreenSelectorDepartment()));
                                 },
                                 textButton: 'Plan semanal'),
                             hasPermissionUsuario(currentUsers!.listPermission!,
@@ -480,11 +477,11 @@ class _DrawerMenuCustomState extends State<DrawerMenuCustom> {
                                 ? MyWidgetButton(
                                     icon: Icons.add_moderator_outlined,
                                     onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const AdminPlan()));
+                                      // Navigator.push(
+                                      //     context,
+                                      //     MaterialPageRoute(
+                                      //         builder: (context) =>
+                                      //             const AdminPlan()));
                                     },
                                     textButton: 'Admin Plan')
                                 : const SizedBox()

@@ -376,35 +376,35 @@ class _AddIncidenciaMainState extends State<AddIncidenciaMain> {
   }
 
   chooseDepart() async {
-    await showDialog(
-        context: context,
-        builder: (context) {
-          return SelectedDepartments(
-            pressDepartment: (val) {
-              setState(() {
-                pickedDepart = Department(
-                  nameDepartment: val[0],
-                );
-              });
-            },
-          );
-        });
+    // await showDialog(
+    //     context: context,
+    //     builder: (context) {
+    //       return SelectedDepartments(
+    //         pressDepartment: (val) {
+    //           setState(() {
+    //             pickedDepart = Department(
+    //               nameDepartment: val[0],
+    //             );
+    //           });
+    //         },
+    //       );
+    //     });
   }
 
   chooseDepartReponsables() async {
-    await showDialog(
-        context: context,
-        builder: (context) {
-          return SelectedDepartments(
-            pressDepartment: (val) {
-              listDepartResponsable.clear();
-              for (var element in val) {
-                listDepartResponsable.add(Department(nameDepartment: element));
-              }
-              setState(() {});
-            },
-          );
-        });
+    // await showDialog(
+    //     context: context,
+    //     builder: (context) {
+    //       return SelectedDepartments(
+    //         pressDepartment: (val) {
+    //           listDepartResponsable.clear();
+    //           for (var element in val) {
+    //             listDepartResponsable.add(Department(nameDepartment: element));
+    //           }
+    //           setState(() {});
+    //         },
+    //       );
+    //     });
   }
 
   chooseUsuario() async {

@@ -4,15 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '/src/nivel_2/folder_reception/provider_reception_planificacion.dart';
 import '/src/folder_admin_user/services_provider_users.dart';
-import '/src/provider/provider_sublimacion.dart';
-
 import 'screen_splash.dart';
 import 'src/folder_cliente_company/provider_clientes/provider_clientes.dart';
 import 'src/nivel_2/folder_bordado/provider/provider_bordado.dart';
 import 'src/nivel_2/folder_bordado/provider/provider_bordado_tirada.dart';
-import 'src/nivel_2/folder_printer/printer_provider.dart';
-import 'src/nivel_2/folder_satreria/provider/provider_sastreria.dart';
-import 'src/nivel_2/folder_serigrafia/provider/provider_serigrafia.dart';
+// import 'src/nivel_2/folder_printer/printer_provider.dart';
+
 import 'src/provider/provider_department.dart';
 import 'src/provider/provider_incidencia.dart';
 import 'src/provider/provider_planificacion.dart';
@@ -32,19 +29,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => PrinterProvider()),
+        // ChangeNotifierProvider(create: (_) => PrinterProvider()),
         ChangeNotifierProvider(create: (_) => ProviderDepartment()),
         ChangeNotifierProvider(create: (_) => ProviderPlanificacion()),
         ChangeNotifierProvider(create: (_) => ProviderIncidencia()),
         //ProviderIncidencia
-        ChangeNotifierProvider(create: (_) => ProviderSublimacion()),
+        // ChangeNotifierProvider(create: (_) => ProviderSublimacion()),
         ChangeNotifierProvider(create: (_) => ReceptionProviderPlanificacion()),
         ChangeNotifierProvider(create: (_) => ServicesProviderUsers()),
         ChangeNotifierProvider(create: (_) => ClienteProvider()),
         ChangeNotifierProvider(create: (_) => ProvideBordado()),
         ChangeNotifierProvider(create: (_) => ProviderBordadoTirada()),
-        ChangeNotifierProvider(create: (_) => ProviderSastreria()),
-        ChangeNotifierProvider(create: (_) => ProviderSerigrafia()),
+        // ChangeNotifierProvider(create: (_) => ProviderSastreria()),
+        // ChangeNotifierProvider(create: (_) => ProviderSerigrafia()),
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,

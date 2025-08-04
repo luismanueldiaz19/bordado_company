@@ -7,13 +7,10 @@ import '/src/datebase/methond.dart';
 import '/src/util/commo_pallete.dart';
 import '/src/widgets/validar_screen_available.dart';
 import '../../datebase/url.dart';
-import '../../folder_product/add_product.dart';
 import '../../model/product_new_orden.dart';
-import '../../util/helper.dart';
 import '../../widgets/loading.dart';
 import '../folder_planificacion/add_continuacion_planificacion.dart';
 import '../folder_planificacion/model_planificacion/planificacion_last.dart';
-import '../folder_planificacion/url_planificacion/url_planificacion.dart';
 
 class AddItemOrden extends StatefulWidget {
   const AddItemOrden({super.key, required this.item});
@@ -77,25 +74,25 @@ class _AddItemOrdenState extends State<AddItemOrden> {
   }
 
   void addProductoDialog() async {
-    final product = await showDialog(
-        context: context,
-        builder: ((context) {
-          return const AddProducto();
-        }));
+    // final product = await showDialog(
+    //     context: context,
+    //     builder: ((context) {
+    //       return const AddProducto();
+    //     }));
 
-    if (product != null) {
-      // var item = [];
-      // print('Producto : $product');
-      for (var item in product['list_department']) {
-        listProduct.add(
-          ProductPlanificaion(
-              cantProduto: product['cant'],
-              tipoProducto: product['product'],
-              department: item),
-        );
-      }
-      setState(() {});
-    }
+    // if (product != null) {
+    //   // var item = [];
+    //   // print('Producto : $product');
+    //   for (var item in product['list_department']) {
+    //     listProduct.add(
+    //       ProductPlanificaion(
+    //           cantProduto: product['cant'],
+    //           tipoProducto: product['product'],
+    //           department: item),
+    //     );
+    //   }
+    //   setState(() {});
+    // }
   }
 
   @override
@@ -323,12 +320,12 @@ class _AddItemOrdenState extends State<AddItemOrden> {
                                   ),
                                 ),
                                 const SizedBox(height: 15),
-                                customButton(
-                                    onPressed: () => addProductoDialog(),
-                                    width: 250,
-                                    colorText: Colors.white,
-                                    colors: colorsAd,
-                                    textButton: 'Agregar Articulo'),
+                                // customButton(
+                                //     onPressed: () => addProductoDialog(),
+                                //     width: 250,
+                                //     colorText: Colors.white,
+                                //     colors: colorsAd,
+                                //     textButton: 'Agregar Articulo'),
                                 listProduct.isNotEmpty
                                     ? Padding(
                                         padding: const EdgeInsets.all(25.0),

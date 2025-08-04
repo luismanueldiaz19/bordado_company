@@ -3,7 +3,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
-import '../../services/api_services.dart';
+import 'services/api_services.dart';
 import '/src/datebase/current_data.dart';
 import '/src/datebase/url.dart';
 import '/src/home.dart';
@@ -18,7 +18,7 @@ class SignInLogin extends StatefulWidget {
 }
 
 class _SignInLoginState extends State<SignInLogin> {
-  final TextEditingController code = TextEditingController(text: '1995');
+  final TextEditingController code = TextEditingController(text: '199512');
   final TextEditingController pinCode = TextEditingController(text: '1234');
 
   final ApiService _apiService = ApiService();
@@ -27,14 +27,6 @@ class _SignInLoginState extends State<SignInLogin> {
 
   final FocusNode _focusNode = FocusNode();
 
-  final List<Map<String, dynamic>> colorOptions = [
-    {"name": "Blanco", "color": Colors.white},
-    {"name": "Negro", "color": Colors.black},
-    {"name": "Rojo", "color": Colors.red},
-    {"name": "Azul", "color": Colors.blue},
-    {"name": "Verde", "color": Colors.green},
-    {"name": "Amarillo", "color": Colors.yellow},
-  ];
   Future signIn(context) async {
     if (code.text.isNotEmpty && pinCode.text.isNotEmpty) {
       setState(() {
@@ -45,11 +37,11 @@ class _SignInLoginState extends State<SignInLogin> {
           'http://$ipLocal/$pathLocal/usuarios/login.php',
           {'code': code.text, "pin_code": pinCode.text});
 
-      print(res);
+      // print(res);
       final response = jsonDecode(res);
 
       if (response['success']) {
-        print(response['data']);
+        // print(response['data']);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(response['message']),
             backgroundColor: Colors.green,

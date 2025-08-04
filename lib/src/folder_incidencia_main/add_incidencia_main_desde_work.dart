@@ -11,7 +11,7 @@ import '../datebase/url.dart';
 import '../folder_admin_permiso/dialog_list_usuario.dart';
 import '../model/department.dart';
 import '../nivel_2/folder_insidensia/pages_insidencia.dart/selected_department.dart';
-import '../nivel_2/forder_sublimacion/model_nivel/sublima.dart';
+import '../model/sublima.dart';
 import '../util/helper.dart';
 import '../widgets/loading.dart';
 import 'add_product_incidencia.dart';
@@ -410,19 +410,19 @@ class _AddIncidenciaMainDesdeWorkState
   }
 
   chooseDepartReponsables() async {
-    await showDialog(
-        context: context,
-        builder: (context) {
-          return SelectedDepartments(
-            pressDepartment: (val) {
-              listDepartResponsable.clear();
-              for (var element in val) {
-                listDepartResponsable.add(Department(nameDepartment: element));
-              }
-              setState(() {});
-            },
-          );
-        });
+    // await showDialog(
+    //     context: context,
+    //     builder: (context) {
+    //       return SelectedDepartments(
+    //         pressDepartment: (val) {
+    //           listDepartResponsable.clear();
+    //           for (var element in val) {
+    //             listDepartResponsable.add(Department(nameDepartment: element));
+    //           }
+    //           setState(() {});
+    //         },
+    //       );
+    //     });
   }
 
   chooseUsuario() async {

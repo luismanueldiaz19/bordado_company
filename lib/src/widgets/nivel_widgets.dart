@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../nivel_2/forder_sublimacion/screen_produccion_department.dart';
+import '../src_screen_produccion/screen_produccion_department.dart';
 import '/src/util/commo_pallete.dart';
 import '../datebase/current_data.dart';
 import '../model/department.dart';

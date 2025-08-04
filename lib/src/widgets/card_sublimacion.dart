@@ -6,18 +6,17 @@ import 'package:bordado_company/src/util/show_mesenger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../model/orden_work.dart';
-import '../../../model/tipo_trabajo.dart';
-import '../../../widgets/custom_comment_widget.dart';
-import '../../folder_printer/model/printer_plan.dart';
+import '../model/orden_work.dart';
+import '../model/tipo_trabajo.dart';
+import 'custom_comment_widget.dart';
 import '/src/datebase/current_data.dart';
 import '/src/datebase/methond.dart';
 import '/src/datebase/url.dart';
-import '/src/nivel_2/forder_sublimacion/model_nivel/image_get_path_file.dart';
+import '../model/image_get_path_file.dart';
 import 'package:file_picker/file_picker.dart';
 import '/src/util/get_time_relation.dart';
 import '/src/util/helper.dart';
-import '../../../model/users.dart';
+import '../model/users.dart';
 
 class CardSublimacion extends StatefulWidget {
   const CardSublimacion({
@@ -135,6 +134,7 @@ class _CardSublimacionState extends State<CardSublimacion> {
   void ajustarStart(OrdenWork item) async {
     bool? value = await showConfirmationDialogOnyAsk(context, actionMjs);
     if (value != null && value) {
+      widget.current.estadoHoja = estadoHojaList[2];
       item.startDate = DateTime.now().toString().substring(0, 19);
       item.endDate = null;
       actualizarItem(item);
@@ -144,6 +144,7 @@ class _CardSublimacionState extends State<CardSublimacion> {
   void ajustarEnd(OrdenWork item) async {
     bool? value = await showConfirmationDialogOnyAsk(context, actionMjs);
     if (value != null && value) {
+      widget.current.estadoHoja = estadoHojaList[3];
       item.endDate = DateTime.now().toString().substring(0, 19);
       actualizarItem(item);
     }
@@ -166,8 +167,6 @@ class _CardSublimacionState extends State<CardSublimacion> {
   }
 
   void ajustarCantProducion(Campo itemCampo) async {
-    ///actualizarCantProducion
-    ///
     String? valueCant = await showDialog<String>(
         context: context,
         builder: (context) {
@@ -190,11 +189,25 @@ class _CardSublimacionState extends State<CardSublimacion> {
     }
   }
 
+  void ajustarTerminacion(OrdenWork item) async {
+    bool? value =
+        await showConfirmationDialogOnyAsk(context, confirmarFinished);
+    if (value != null && value) {
+      if (widget.current.endDate.toString().isEmpty ||
+          widget.current.endDate == null) {
+        item.endDate = DateTime.now().toString().substring(0, 19);
+      }
+      item.estadoHoja = estadoHojaList[4];
+      actualizarItem(item);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final style = Theme.of(context).textTheme;
     bool _isEliminar = hasPermissionUsuario(
-        currentUsers!.listPermission!, "operador", "eliminar");
+        currentUsers!.listPermission!, "admin", "eliminar");
+    bool? isMine = currentUsers!.id == widget.current.usuarioId;
     return Container(
       margin: EdgeInsets.all(5),
       decoration: BoxDecoration(
@@ -202,17 +215,15 @@ class _CardSublimacionState extends State<CardSublimacion> {
         borderRadius: BorderRadius.circular(0),
         boxShadow: [
           BoxShadow(
-            color: Colors.blueGrey.withAlpha(77),
-            blurRadius: 1,
-            offset: const Offset(0, 1),
-          ),
+              color: Colors.blueGrey.withAlpha(77),
+              blurRadius: 1,
+              offset: const Offset(0, 1)),
           BoxShadow(
-            color: PrinterPlan.getColorByDepartment(
-                    widget.current.nameDepartment ?? 'N/A')
-                .withAlpha(51), // alpha 0.2 * 255 ≈ 51
-            blurRadius: 12,
-            offset: const Offset(2, 2),
-          ),
+              color:
+                  getColorByDepartment(widget.current.nameDepartment ?? 'N/A')
+                      .withAlpha(51), // alpha 0.2 * 255 ≈ 51
+              blurRadius: 12,
+              offset: const Offset(2, 2)),
         ],
       ),
       child: Padding(
@@ -281,7 +292,23 @@ class _CardSublimacionState extends State<CardSublimacion> {
                 ],
               ),
             ),
-
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Row(
+                children: [
+                  Icon(Icons.person_2_outlined,
+                      size: style.bodySmall?.fontSize),
+                  const SizedBox(width: 10),
+                  Text(
+                    widget.current.fullName ?? 'Sin Nota',
+                    // textAlign: TextAlign.justify,
+                    style:
+                        style.bodySmall?.copyWith(color: Colors.orangeAccent),
+                  ),
+                  const SizedBox(width: 10),
+                ],
+              ),
+            ),
             const Divider(color: Colors.black12),
             if (widget.current.campos != null &&
                 widget.current.campos!.isNotEmpty)
@@ -295,7 +322,7 @@ class _CardSublimacionState extends State<CardSublimacion> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: PrinterPlan.getColorByDepartment(
+                        color: getColorByDepartment(
                             widget.current.nameDepartment ?? 'N/A'),
                       ),
                     ),
@@ -344,7 +371,7 @@ class _CardSublimacionState extends State<CardSublimacion> {
                                       offset: const Offset(0, 1),
                                     ),
                                     BoxShadow(
-                                      color: PrinterPlan.getColorByDepartment(
+                                      color: getColorByDepartment(
                                               widget.current.nameDepartment ??
                                                   'N/A')
                                           .withAlpha(
@@ -392,6 +419,31 @@ class _CardSublimacionState extends State<CardSublimacion> {
             //     ],
             //   ),
             // ),
+
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: buildStyledDropdown(
+                      // width: 150,
+                      height: 30,
+                      label: 'Estado de produccion',
+                      value: widget.current.estadoHoja?.toUpperCase(),
+                      items: estadoHojaList,
+                      onChanged: isMine
+                          ? (value) {
+                              widget.current.estadoHoja = value?.toUpperCase();
+                              actualizarItem(widget.current);
+                            }
+                          : (value) {},
+                      style: style,
+                      color: estadoHojaColores[
+                              widget.current.estadoHoja ?? 'EN PRODUCCION'] ??
+                          Colors.red,
+                      icon: Icons.list_alt_rounded),
+                ),
+              ],
+            ),
             const Divider(color: Colors.black12),
             ///////aqui estaba las pieza pkt
             ///
@@ -488,19 +540,21 @@ class _CardSublimacionState extends State<CardSublimacion> {
                               ?.copyWith(color: Colors.redAccent)),
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                          icon: const Icon(Icons.play_arrow),
-                          tooltip: 'Actualizar el comienzo',
-                          onPressed: () => ajustarStart(widget.current)),
-                      IconButton(
-                          icon: const Icon(Icons.stop, color: Colors.red),
-                          tooltip: 'Actualizar el terminado',
-                          onPressed: () => ajustarEnd(widget.current)),
-                    ],
-                  ),
+                  isMine
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                                icon: const Icon(Icons.play_arrow),
+                                tooltip: 'Actualizar el comienzo',
+                                onPressed: () => ajustarStart(widget.current)),
+                            IconButton(
+                                icon: const Icon(Icons.stop, color: Colors.red),
+                                tooltip: 'Actualizar el terminado',
+                                onPressed: () => ajustarEnd(widget.current)),
+                          ],
+                        )
+                      : const SizedBox(),
                   Container(
                     height: 35,
                     width: 75,
@@ -514,7 +568,7 @@ class _CardSublimacionState extends State<CardSublimacion> {
                           offset: const Offset(0, 1),
                         ),
                         BoxShadow(
-                          color: PrinterPlan.getColorByDepartment(
+                          color: getColorByDepartment(
                                   widget.current.nameDepartment ?? 'N/A')
                               .withAlpha(51), // alpha 0.2 * 255 ≈ 51
                           blurRadius: 12,
@@ -547,15 +601,18 @@ class _CardSublimacionState extends State<CardSublimacion> {
                             Icon(Icons.message_outlined, color: Colors.black45),
                         onPressed: () => ajustarComentario(widget.current)),
                   ),
-                  Tooltip(
-                    message: 'Eliminar',
-                    child: IconButton(
-                      icon: Icon(Icons.delete_outline_sharp, color: Colors.red),
-                      onPressed: () {
-                        widget.eliminarPress(widget.current);
-                      },
-                    ),
-                  ),
+                  !_isEliminar
+                      ? const SizedBox()
+                      : Tooltip(
+                          message: 'Eliminar',
+                          child: IconButton(
+                            icon: Icon(Icons.delete_outline_sharp,
+                                color: Colors.red),
+                            onPressed: () {
+                              widget.eliminarPress(widget.current);
+                            },
+                          ),
+                        ),
                   // Tooltip(
                   //   message: 'Editar',
                   //   child: IconButton(
@@ -565,39 +622,45 @@ class _CardSublimacionState extends State<CardSublimacion> {
                   //     },
                   //   ),
                   // ),
-                  Tooltip(
-                    message: 'Agregar Fotos',
-                    child: IconButton(
-                      icon:
-                          Icon(Icons.add_a_photo_outlined, color: Colors.blue),
-                      onPressed: () => obtenerImage(),
-                    ),
-                  ),
-                  Tooltip(
-                    message: 'Agregar una incidencia',
-                    child: IconButton(
-                      icon: Icon(Icons.warning_amber_rounded,
-                          color: Colors.orange),
-                      onPressed: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => AddIncidenciaMainDesdeWork(
-                        //         orden: widget.current,
-                        //         pickedDepart: Department(
-                        //             nameDepartment:
-                        //                 widget.current.nameDepartment)),
-                        //   ),
-                        // );
-                      },
-                    ),
-                  ),
-                  CustomLoginButton(
-                      onPressed: () => actualizarItem(widget.current),
-                      width: 100,
-                      text: 'Completar',
-                      colorButton: PrinterPlan.getColorByDepartment(
-                          widget.current.nameDepartment ?? 'N/A')),
+                  isMine
+                      ? Tooltip(
+                          message: 'Agregar Fotos',
+                          child: IconButton(
+                            icon: Icon(Icons.add_a_photo_outlined,
+                                color: Colors.blue),
+                            onPressed: () => obtenerImage(),
+                          ),
+                        )
+                      : const SizedBox(),
+                  isMine
+                      ? Tooltip(
+                          message: 'Agregar una incidencia',
+                          child: IconButton(
+                            icon: Icon(Icons.warning_amber_rounded,
+                                color: Colors.orange),
+                            onPressed: () {
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => AddIncidenciaMainDesdeWork(
+                              //         orden: widget.current,
+                              //         pickedDepart: Department(
+                              //             nameDepartment:
+                              //                 widget.current.nameDepartment)),
+                              //   ),
+                              // );
+                            },
+                          ),
+                        )
+                      : const SizedBox(),
+                  isMine
+                      ? CustomLoginButton(
+                          onPressed: () => ajustarTerminacion(widget.current),
+                          width: 100,
+                          text: 'Completar',
+                          colorButton: getColorByDepartment(
+                              widget.current.nameDepartment ?? 'N/A'))
+                      : const SizedBox(),
                 ],
               ),
             ),

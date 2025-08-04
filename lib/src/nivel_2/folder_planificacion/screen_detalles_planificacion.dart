@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:animate_do/animate_do.dart';
 import 'package:bordado_company/src/services/api_services.dart';
-import 'package:bordado_company/src/util/commo_pallete.dart';
 import 'package:bordado_company/src/util/helper.dart';
 import 'package:bordado_company/src/widgets/loading.dart';
 import 'package:bordado_company/src/widgets/mensaje_scaford.dart';
@@ -11,14 +10,13 @@ import '../../model/orden_list.dart';
 import '../../model/tipo_trabajo.dart';
 import '../../screen_print_pdf/apis/pdf_api.dart';
 import '../../widgets/validar_screen_available.dart';
-import '../folder_printer/model/printer_plan.dart';
 import '../folder_reception/print_reception/print_orden_cliente_interno.dart';
 import '/src/datebase/current_data.dart';
 import '/src/model/department.dart';
 import '../../datebase/url.dart';
 import '../../folder_incidencia_main/add_incidencia_main_desde_work.dart';
 import '../folder_reception/orden_file.dart';
-import '../forder_sublimacion/model_nivel/sublima.dart';
+import '../../model/sublima.dart';
 
 class DetallesPlanificacion extends StatefulWidget {
   const DetallesPlanificacion({super.key, this.orden});
@@ -155,7 +153,7 @@ class _DetallesPlanificacionState extends State<DetallesPlanificacion> {
                     blurRadius: 8,
                     offset: const Offset(0, 4)),
                 BoxShadow(
-                    color: PrinterPlan.getColorByDepartment(
+                    color: getColorByDepartment(
                             widget.orden?.nameDepartment ?? 'N/A')
                         .withValues(alpha: 0.5),
                     blurRadius: 12,
@@ -262,7 +260,7 @@ class _DetallesPlanificacionState extends State<DetallesPlanificacion> {
                                   });
                                 },
                                 style: Theme.of(context).textTheme,
-                                color: PrinterPlan.getColorByDepartment(
+                                color: getColorByDepartment(
                                         widget.orden?.nameDepartment ?? 'N/A')
                                     .withValues(alpha: 0.7),
                                 icon: Icons.description,
@@ -312,7 +310,7 @@ class _DetallesPlanificacionState extends State<DetallesPlanificacion> {
                 CustomLoginButton(
                   onPressed: () => enviarToProducion(context),
                   text: 'Tomar Producción',
-                  colorButton: PrinterPlan.getColorByDepartment(
+                  colorButton: getColorByDepartment(
                       widget.orden?.nameDepartment ?? 'N/A'),
                   width: 250,
                 )

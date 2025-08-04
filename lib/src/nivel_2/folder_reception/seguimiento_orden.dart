@@ -6,7 +6,6 @@ import '/src/datebase/current_data.dart';
 import '/src/nivel_2/folder_planificacion/url_planificacion/url_planificacion.dart';
 import '/src/nivel_2/folder_reception/add_item_orden.dart';
 import '/src/nivel_2/folder_reception/provider_reception_planificacion.dart';
-import '/src/nivel_2/tabla_indentifiacion_action/indentificacion_action.dart';
 import '/src/util/show_mesenger.dart';
 import '../../datebase/methond.dart';
 import '../../datebase/url.dart';
@@ -147,18 +146,6 @@ class _SeguimientoOrdenState extends State<SeguimientoOrden> {
                     },
                     label: const Text('PROGRAMAR AVISO'))),
             const SizedBox(height: 10),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.80,
-              child: IndetificacionAction(press: (value) {
-                statuMethond(
-                    PlanificacionItem(
-                        isKeyUniqueProduct: widget.item.isKeyUniqueProduct),
-                    statu: value);
-
-                //
-                utilShowMesenger(context, 'Publicado en $value');
-              }),
-            ),
             Padding(
               padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
               child: ListTile(
@@ -480,7 +467,7 @@ class TableModifica extends StatelessWidget {
                     //   ),
                     // );
                   }),
-                  DataCell(Text(getClientePorPrioridad(item.priority ?? ''))),
+                  DataCell(Text((item.priority ?? ''))),
                   DataCell(Text(item.department ?? '')),
                   DataCell(Text(item.statu ?? '')),
                   DataCell(Center(child: Text(item.numOrden ?? '')), onTap: () {

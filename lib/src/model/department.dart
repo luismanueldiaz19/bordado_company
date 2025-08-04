@@ -53,4 +53,7 @@ class Department {
         "id_key_work": idKeyWork ?? '0',
         "type": type ?? 'N/A',
       };
+      
+      
+      
 }

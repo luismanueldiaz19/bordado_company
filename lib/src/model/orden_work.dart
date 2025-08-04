@@ -15,7 +15,7 @@ String ordenWorkToJson(List<OrdenWork> data) =>
 //
 class OrdenWork {
   String? hojaProduccionId;
-  
+
   String? startDate;
   dynamic endDate;
   String? createdAt;

@@ -506,7 +506,7 @@ class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
                                 color: getColorPriority(value),
                                 boxShadow: const [shadow]),
                             child: TextButton(
-                                child: Text(getClientePorPrioridad(value),
+                                child: Text(value,
                                     style: const TextStyle(color: colorsAd)),
                                 onPressed: () => searchingPriority(value)),
                           ),
@@ -820,8 +820,7 @@ class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
                                         onTap: () {
                                       settingContabilidad(item);
                                     }, showEditIcon: true),
-                                    DataCell(Text(getClientePorPrioridad(
-                                        item.priority ?? ''))),
+                                    DataCell(Text((item.priority ?? ''))),
                                     DataCell(
                                         Center(
                                           child: Text(

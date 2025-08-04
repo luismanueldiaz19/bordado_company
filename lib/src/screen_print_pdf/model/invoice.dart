@@ -1,5 +1,4 @@
-import '/src/nivel_2/folder_satreria/model/sastreria_item.dart';
-import '/src/nivel_2/forder_sublimacion/model_nivel/sublima.dart';
+import '../../model/sublima.dart';
 import '/src/screen_print_pdf/model/customer.dart';
 
 class Invoice {
@@ -9,7 +8,6 @@ class Invoice {
   final List<InvoiceItem>? items;
   final List<InvoiceItemFinalOrden>? itemsFinalOrder;
   final List<Sublima>? listEmpleadoDestacados;
-  final List<SastreriaWorkItem>? listSastreriaWorkItem;
   final List<Sublima>? suplimaWork;
   // final List<InvoiceItemFinalOrden>? itemsFinalOrder;
 
@@ -24,7 +22,6 @@ class Invoice {
     required this.customer,
     this.items,
     this.listEmpleadoDestacados,
-    this.listSastreriaWorkItem,
     required this.head,
     this.suplimaWork,
 

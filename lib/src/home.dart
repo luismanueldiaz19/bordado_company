@@ -22,13 +22,18 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             const SizedBox(width: double.infinity),
             Padding(
-                padding: const EdgeInsets.only(left: 25),
-                child: Text('Departments',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(color: Colors.grey))),
-            const Expanded(child: NivelWidgets())
+              padding: const EdgeInsets.only(left: 25),
+              child: Text(
+                'Departments',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium!
+                    .copyWith(color: Colors.grey),
+              ),
+            ),
+            const Expanded(
+              child: NivelWidgets(),
+            ),
           ],
         ),
       ),

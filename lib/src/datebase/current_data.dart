@@ -29,11 +29,14 @@ const String onOutStatu = 'N/A';
 
 List<String> accesoDepart = [];
 
-String textConfirmacion = '👉🏼Esta seguro realizar el pedido ? 👈🏼';
-String eliminarMjs = '🥺Esta seguro de eliminar🥺';
-String actionMjs = '👉🏼Esta seguro de confirmar el tiempo ?👈🏼';
+String textConfirmacion = '👉🏼Esta Seguro Realizar El Pedido ? 👈🏼';
+String eliminarMjs = '🥺Esta Seguro De Eliminar🥺';
+String actionMjs = '👉🏼Esta Seguro De Confirmar El Tiempo ?👈🏼';
 String confirmarMjs =
-    '👉🏼Esta seguro de confirmar el despacho de las facturas?👈🏼';
+    '👉🏼Esta Seguro De Confirmar El Despacho De Las Facturas?👈🏼';
+
+String confirmarFinished =
+    '👉🏼Esta Seguro De Confirmar El Como Terminado?👈🏼';
 List<String> ocupacionesList = [
   'Operador',
   'Digitador de bordado',
@@ -166,36 +169,44 @@ Widget identy(context) => Padding(
       ),
     );
 
-List<String>? priorityList = [
-  'Normal',
-  'Hoja verde',
-  'Hoja naranja',
-  'Hoja amarilla'
-];
+List<String>? priorityList = ['NORMAL', 'EMERGENCIA', 'PRIORIDAD', 'AGREGADO'];
 
-// Mapa de colores asociados a cada prioridad
+// Map<String, Color> priorityColors = {
+//   'NORMAL': Colors.white, // Normal en blanco (puedes cambiar el color si quieres)
+//   'HOJA VERDE': Colors.green.shade400, // Emergencia
+//   'HOJA NARANJA': Colors.orange, // Prioridad
+//   'HOJA AMARILLA': Colors.yellow.shade300 // Agregado
+// };
 Map<String, Color> priorityColors = {
-  'Normal': Colors.white, // Por ejemplo, Normal en azul
-  'Hoja verde': Colors.green.shade400, // Hoja verde en verde   = Emergencia
-  'Hoja naranja': Colors.orange, // Hoja naranja en naranja  =   Prioridad
-  'Hoja amarilla':
-      Colors.yellow.shade300 // Hoja amarilla en amarillo  =  Agregado
+  'NORMAL': Colors.white, // Cliente: NORMAL
+  'EMERGENCIA': Colors.red.shade400, // Cliente: EMERGENCIA
+  'PRIORIDAD': Colors.orange, // Cliente: PRIORIDAD
+  'AGREGADO': Colors.yellow.shade300 // Cliente: AGREGADO
 };
 
-String getClientePorPrioridad(String prioridad) {
-  switch (prioridad) {
-    case 'Normal':
-      return 'Normal';
-    case 'Hoja verde':
-      return 'Emergencia';
-    case 'Hoja naranja':
-      return 'Prioridad';
-    case 'Hoja amarilla':
-      return 'Agregado';
-    default:
-      return 'Normal'; // En caso de que no coincida con ninguna prioridad
-  }
-}
+Map<String, IconData> priorityIcons = {
+  'NORMAL': Icons.check_circle_outline,
+  'EMERGENCIA': Icons.warning_amber_rounded,
+  'PRIORIDAD': Icons.priority_high,
+  'AGREGADO': Icons.add_circle_outline,
+};
+
+// String getClientePorPrioridad(String prioridad) {
+//   switch (prioridad.toUpperCase()) {
+//     case 'NORMAL':
+//       return 'NORMAL';
+//     case 'HOJA VERDE':
+//       return 'EMERGENCIA';
+//     case 'HOJA NARANJA':
+//       return 'PRIORIDAD';
+//     case 'HOJA AMARILLA':
+//       return 'AGREGADO';
+//     default:
+//       return 'NORMAL';
+//   }
+// }
+
+
 
 // Función para obtener el color según la prioridad
 Color getColorPriority(String priorityName) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/src/pages/sign_in/sign_in_login.dart';
+import 'src/sign_in_login.dart';
 import 'src/widgets/loading.dart';
 
 class ScreenSplash extends StatefulWidget {

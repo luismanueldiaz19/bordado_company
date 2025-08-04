@@ -64,8 +64,8 @@ Widget buildStyledDropdown({
     width: width,
     padding: const EdgeInsets.symmetric(horizontal: 12),
     decoration: BoxDecoration(
-      color: color.withOpacity(0.1),
-      borderRadius: BorderRadius.circular(12),
+      color: color.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(0),
       border: Border.all(color: color, width: 1),
     ),
     child: DropdownButton<String>(
@@ -102,18 +102,20 @@ class EstadoChip extends StatelessWidget {
   const EstadoChip({super.key, required this.estado});
   @override
   Widget build(BuildContext context) {
-    Color color = switch (estado.toLowerCase()) {
-      'en revision' => Colors.orange,
-      'pendiente' => Colors.grey,
-      'pausado' => Colors.red,
-      'en proceso' => Colors.green,
-      'completado' => Colors.blueAccent,
-      _ => Colors.grey,
-    };
+    // Color color = switch (estado.toLowerCase()) {
+    //   'en revision' => Colors.orange,
+    //   'pendiente' => Colors.grey,
+    //   'pausado' => Colors.red,
+    //   'en proceso' => Colors.green,
+    //   'completado' => Colors.blueAccent,
+    //   _ => Colors.grey,
+    // };
 
     return Chip(
-      label: Text(estado, style: const TextStyle(color: Colors.white)),
-      backgroundColor: color,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+      label: Text(estado.toUpperCase(),
+          style: const TextStyle(color: Colors.white)),
+      backgroundColor: estadoHojaColores[estado] ?? Colors.grey,
       visualDensity: VisualDensity.compact,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
@@ -591,3 +593,45 @@ bool validarFechas(String fechaCreacion, String fechaEntrega) {
 
   return creacion.isBefore(entrega);
 }
+
+Color getColorByDepartment(String estado) {
+  switch (estado.toUpperCase()) {
+    case 'SUBLIMACIÓN':
+    case 'SUBLIMACION': // por si viene sin tilde
+      return turquesaSublimado;
+    case 'PRINTER':
+      return naranjaPrinter;
+    case 'SASTRERIA':
+      return verdeLimonSastreria;
+    case 'CONFECCION':
+      return lilaConfeccion;
+    case 'BORDADO':
+      return amarilloBordado;
+    case 'SERIGRAFIA':
+      return fucsiaSerigrafia;
+    case 'COSTURA':
+      return rojoCostura;
+    case 'DISENO':
+    case 'DISEÑO':
+      return rojoCostura;
+    default:
+      return Colors.orange;
+  }
+}
+
+final List<String> estadoHojaList = [
+  'PENDIENTE'.toUpperCase(),
+  'EN PROCESO'.toUpperCase(),
+  'EN PRODUCCION'.toUpperCase(),
+  'PAUSADO'.toUpperCase(),
+  'COMPLETADO'.toUpperCase(),
+  'CANCELADO'.toUpperCase(),
+];
+final Map<String?, Color> estadoHojaColores = {
+  'PENDIENTE'.toUpperCase(): Colors.orange,
+  'EN PROCESO'.toUpperCase(): Colors.blue,
+  'EN PRODUCCION'.toUpperCase(): Colors.indigo,
+  'PAUSADO'.toUpperCase(): Colors.grey,
+  'COMPLETADO'.toUpperCase(): Colors.green,
+  'CANCELADO'.toUpperCase(): Colors.red,
+};

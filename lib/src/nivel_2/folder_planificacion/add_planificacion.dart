@@ -65,8 +65,6 @@ class _AddPlanificacionFormState extends State<AddPlanificacionForm> {
       items: [], // Los agregarás en la siguiente pantalla
     );
 
-
-
     // Abrir formulario para agregar hijos (OrdenItems)
     Navigator.push(
       context,
@@ -236,8 +234,8 @@ class _AddPlanificacionFormState extends State<AddPlanificacionForm> {
                                         return DropdownMenuItem<String>(
                                           value: category,
                                           child: Center(
-                                              child: Text(getClientePorPrioridad(
-                                                  category))), // Centrar el texto de cada ítem
+                                              child: Text(
+                                                  category)), // Centrar el texto de cada ítem
                                         );
                                       }).toList(),
                                       onChanged: (value) {

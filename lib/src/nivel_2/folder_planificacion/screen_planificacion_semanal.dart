@@ -155,8 +155,8 @@ class _ScreenPlanificacionSemanalState
                             color: getColorPriority(value),
                             boxShadow: const [shadow]),
                         child: TextButton(
-                          child: Text(getClientePorPrioridad(value),
-                              style: const TextStyle(color: colorsAd)),
+                          child: Text(value,
+                              style: const TextStyle(color: Colors.black)),
                           onPressed: () {
                             providerData.searchingPriority(value);
                           },
@@ -372,13 +372,12 @@ class _ScreenPlanificacionSemanalState
                             return DataRow(
                               color: WidgetStateProperty.resolveWith<Color>(
                                 (Set<WidgetState> states) {
-                                  // Alterna el color de fondo entre gris y blanco
                                   if (index.isOdd) {
-                                    return getColorPriority(
-                                        item.estadoPrioritario ?? '');
+                                    return Colors.grey
+                                        .shade300; // Color de fondo gris para filas impares
                                   }
-                                  return getColorPriority(
-                                      item.estadoPrioritario ?? '');
+                                  return Colors
+                                      .white; // Color de fondo blanco para filas pares
                                 },
                               ),
                               cells: [
@@ -399,8 +398,26 @@ class _ScreenPlanificacionSemanalState
                                     ),
                                   );
                                 }),
-                                DataCell(Text(getClientePorPrioridad(
-                                    item.estadoPrioritario ?? ''))),
+                                DataCell(Container(
+                                  margin: EdgeInsets.all(5),
+                                  padding: EdgeInsets.all(5),
+                                  color: priorityColors[
+                                      item.estadoPrioritario ?? 'NORMAL'],
+                                  child: Row(
+                                    children: [
+                                      Text(item.estadoPrioritario ?? 'NORMAL',
+                                          style:
+                                              TextStyle(color: Colors.black)),
+                                      const SizedBox(width: 10),
+                                      Icon(
+                                        priorityIcons[
+                                            item.estadoPrioritario ?? 'NORMAL'],
+                                        color: Colors.black,
+                                        size: 16,
+                                      )
+                                    ],
+                                  ),
+                                )),
                                 DataCell(Text(item.nameDepartment ?? '')),
                                 DataCell(EstadoChip(
                                     estado: item.estadoProduccion ?? '')),

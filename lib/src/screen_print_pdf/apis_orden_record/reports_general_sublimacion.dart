@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/widgets.dart';
-import '/src/nivel_2/forder_sublimacion/model_nivel/sublima.dart';
+import '../../model/sublima.dart';
 import '/src/screen_print_pdf/apis/pdf_api.dart';
 // import 'package:settingmat/src/screen_print_pdf/model/customer.dart';
 import '/src/util/get_formatted_number.dart';
