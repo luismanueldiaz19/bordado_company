@@ -345,10 +345,10 @@ class TableModifica extends StatelessWidget {
                 ),
                 cells: [
                   DataCell(const Center(child: Text('Click!')), onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (conext) => SeguimientoOrden(item: item)));
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (conext) => SeguimientoOrden(item: item)));
                   }),
                   DataCell(Text(item.userRegistroOrden ?? '')),
                   DataCell(Center(child: Text(item.numOrden ?? '')), onTap: () {

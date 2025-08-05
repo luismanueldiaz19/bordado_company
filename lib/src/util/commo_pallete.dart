@@ -23,8 +23,8 @@ const Color ktejidogrey = Color.fromARGB(255, 99, 103, 124);
 
 ButtonStyle styleButton = ButtonStyle(
     backgroundColor:
-        MaterialStateProperty.resolveWith((states) => ktejidoBlueOcuro),
-    shape: MaterialStateProperty.resolveWith((states) =>
+        WidgetStateProperty.resolveWith((states) => ktejidoBlueOcuro),
+    shape: WidgetStateProperty.resolveWith((states) =>
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(2))));
 
 // 🎨 Colores por Departamento
@@ -35,8 +35,7 @@ const Color turquesaSublimado =
 const Color verdeLimonSastreria =
     Color.fromARGB(255, 173, 255, 47); // SASTRERIA
 const Color lilaConfeccion = Color.fromARGB(255, 200, 162, 200); // CONFECCION
-const Color amarilloBordado = Color.fromARGB(255, 255, 241, 118); // BORDADO
+const Color amarilloBordado = Color.fromARGB(255, 234, 212, 10); // BORDADO
 const Color fucsiaSerigrafia = Color.fromARGB(255, 255, 105, 180); // SERIGRAFIA
 const Color rojoCostura = Color.fromARGB(255, 255, 76, 76); // COSTURA
 const Color moradoDiseno = Color.fromARGB(255, 186, 104, 200); // DISEÑO
-

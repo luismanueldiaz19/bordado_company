@@ -1,535 +1,537 @@
-import 'package:animate_do/animate_do.dart';
+import 'package:bordado_company/src/util/commo_pallete.dart';
+import 'package:bordado_company/src/util/get_formatted_number.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../screen_print_pdf/apis/pdf_api.dart';
-import '/src/datebase/current_data.dart';
-import '/src/nivel_2/folder_planificacion/url_planificacion/url_planificacion.dart';
-import '/src/nivel_2/folder_reception/add_item_orden.dart';
-import '/src/nivel_2/folder_reception/provider_reception_planificacion.dart';
-import '/src/util/show_mesenger.dart';
-import '../../datebase/methond.dart';
-import '../../datebase/url.dart';
-import '../../model/users.dart';
-import '../../util/commo_pallete.dart';
-import '../../widgets/custom_comment_widget.dart';
-import '../folder_planificacion/model_planificacion/item_planificacion.dart';
-import '../folder_planificacion/model_planificacion/planificacion_last.dart';
-import '../folder_re_orden/add_reorden.dart';
-import 'file_view_orden.dart';
-import 'print_reception/print_orden_cliente_interno.dart';
+import '../../datebase/current_data.dart';
+import '../../model/orden_list.dart';
 
-class SeguimientoOrden extends StatefulWidget {
-  const SeguimientoOrden({super.key, required this.item});
-  final PlanificacionLast item;
+import 'package:intl/intl.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
+
+class ViewFactura extends StatefulWidget {
+  const ViewFactura({super.key, this.factura});
+  final OrdenList? factura;
 
   @override
-  State<SeguimientoOrden> createState() => _SeguimientoOrdenState();
+  State createState() => _ViewFacturaState();
 }
 
-class _SeguimientoOrdenState extends State<SeguimientoOrden> {
-  List<PlanificacionItem> list = [];
-  bool isEntrega = false;
-  late TextEditingController comment;
+class _ViewFacturaState extends State<ViewFactura> {
+  // FacturaRepositories repoFactura = FacturaRepositories();
+  // Factura? item;
+  // Future getFacturaDetallesId() async {
+  //   // setState(() {
+  //   //   listPurchase.clear();
+  //   //   listPurchaseFilter.clear();
+  //   // });
+  //   // item = await repoFactura.getFacturaById(widget.factura!.idFactura!);
 
-  Future getSeguimiento() async {
-    final res = await httpRequestDatabase(selectProductoPlanificacionLastIdKey,
-        {'is_key_product': widget.item.isKeyUniqueProduct.toString()});
-    // print(res.body);
-    list = planificacionItemFromJson(res.body);
-    list.isNotEmpty ? validadListaTerminada(list) : () {};
-    setState(() {});
-  }
+  //   if (!mounted) {
+  //     return;
+  //   }
+  //   setState(() {});
+  // }
 
-  Future updateFromComment(id, comment) async {
-    await httpRequestDatabase(
-        updatePlanificacionCommentLast, {'id': id, 'comment': comment});
-    // print('Comment  Reponse:  ${res.body}');
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
 
-  @override
-  void initState() {
-    super.initState();
-    comment = TextEditingController();
-    getSeguimiento();
-  }
-
-  bool isLoading = false;
-
-  Future updateBalance() async {
-    String? valueCant = await showDialog<String>(
-        context: context,
-        builder: (context) {
-          return const AddComentarioCustom(
-              text: 'Balance', textFielName: 'Escribir Balance Total');
-        });
-
-    if (valueCant != null) {
-      final res = await httpRequestDatabase(updatePlanificacionBalance,
-          {'id': widget.item.id, 'balance': valueCant});
-      if (!mounted) {
-        return;
-      }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: Colors.white,
-          content:
-              Text(res.body, style: const TextStyle(color: Colors.black))));
-    }
-  }
+  //   getFacturaDetallesId();
+  // }
 
   @override
   Widget build(BuildContext context) {
-    final receptionProvider = context.read<ReceptionProviderPlanificacion>();
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Seguimiento de Orden'),
-        actions: [
+        title: const Text('Ver Factura'),
+      ),
+      body: Column(
+        children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-            child: TextButton(
-              onPressed: () {
-                updateBalance();
-              },
-              child: const Text('Poner Balance\$'),
-            ),
+            padding: const EdgeInsets.all(50.0),
+            child: buildFacturaPreview(),
           ),
-          list.isNotEmpty
-              ? Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  child: IconButton(
-                    icon: const Icon(Icons.print),
-                    onPressed: () async {
-                      final filePdf = await PdfPrintOrdenProduccion.generate(
-                        cliente: widget.item.cliente ?? 'N/A',
-                        fecha: widget.item.fechaStart ?? 'N/A',
-                        entrega: widget.item.fechaEntrega ?? 'N/A',
-                        ficha: widget.item.ficha ?? 'N/A',
-                        codigo: widget.item.numOrden ?? 'N/A',
-                        aprobadoPor: '',
-                        productos: [
-                          ...list.map(
-                            (item) => {
-                              'descripcion': item.tipoProduct ?? 'N/A',
-                              'cantidad': item.cant ?? 'N/A',
-                              'precio': '',
-                            },
-                          ),
-                        ],
-                      );
-                      await PdfApi.openFile(filePdf);
-                    },
-                  ),
-                )
-              : const SizedBox()
+          identy(context)
         ],
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          children: [
-            const SizedBox(width: double.infinity),
-            TableModifica(
-                current: list, pressDelete: (id) => eliminarOrden(id)),
-            const SizedBox(height: 5),
-            Container(
-                color: Colors.yellow.shade100,
-                child: TextButton.icon(
-                    icon: const Icon(Icons.timer_outlined),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                AddReorden(item: widget.item)),
-                      );
-                    },
-                    label: const Text('PROGRAMAR AVISO'))),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
-              child: ListTile(
-                title: Text('Comentario de Orden General :',
-                    style: Theme.of(context).textTheme.labelMedium),
-                subtitle: Text(
-                  widget.item.comment ?? 'N/A',
-                  style: Theme.of(context).textTheme.bodySmall,
+    );
+  }
+
+  Widget buildFacturaPreview() {
+    final style = Theme.of(context).textTheme;
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        color: Colors.white,
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            right: 150,
+            top: 15,
+            child: Transform.rotate(
+              angle: -0.50,
+              child: Opacity(
+                opacity: 0.09,
+                child: Image.asset(
+                  logoApp,
+                  height: 500,
+                  width: 500,
                 ),
               ),
             ),
-            isLoading
-                ? const Text('Subiendo')
-                : SizedBox(
-                    height: 60,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 15, horizontal: 25),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Encabezado Empresa
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Logo + Empresa
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text('${currentEmpresa.nombreEmpresa}',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text(
+                        'RNC: ${currentEmpresa.rncEmpresa}',
+                        style: TextStyle(
+                            color: colorsPuppleOpaco,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                          width: 250,
+                          child: Text('${currentEmpresa.adressEmpressa}')),
+                      Row(
+                        children: [
+                          Text('Tel: ${currentEmpresa.telefonoEmpresa}'),
+                          const SizedBox(width: 10),
+                          Text('Tel: ${currentEmpresa.celularEmpresa}'),
+                        ],
+                      ),
+
+                      if (widget.factura != null) ...[
+                        const SizedBox(width: 250, child: Divider()),
+                        const Text('Cliente :',
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold)),
+                        Text('RNC: ${widget.factura!.cliente!.nombre ?? ''}'),
+                        Text(
+                            'Dirección: ${widget.factura!.cliente!.direccion ?? ''}'),
+                        Text(
+                            'Tel: ${widget.factura!.cliente!.telefono ?? 'Sin teléfono'}'),
+                        Row(
                           children: [
-                            Container(
-                              width: 150,
-                              color: Colors.white,
-                              child: TextButton(
-                                  onPressed: () async {
-                                    String? value = await showDialog<String>(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          shape: const RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.zero),
-                                          title: BounceInDown(
-                                              child: Text(
-                                            'Agregar Comentario',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelLarge,
-                                          )),
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              ZoomIn(
-                                                duration: const Duration(
-                                                    milliseconds: 300),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.grey.shade200,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10.0),
-                                                  ),
-                                                  width: 250,
-                                                  child: TextField(
-                                                    textInputAction:
-                                                        TextInputAction.next,
-                                                    controller: comment,
-                                                    decoration:
-                                                        const InputDecoration(
-                                                      border: InputBorder.none,
-                                                      labelText: 'Comentario',
-                                                      contentPadding:
-                                                          EdgeInsets.only(
-                                                              left: 10),
-                                                    ),
-                                                    onEditingComplete: () {
-                                                      Navigator.of(context)
-                                                          .pop(comment.text);
-                                                      comment.clear();
-                                                    },
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              child: const Text('Cancelar'),
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                            ),
-                                            TextButton(
-                                              child: const Text('Comentar'),
-                                              onPressed: () {
-                                                if (comment.text.isNotEmpty) {
-                                                  Navigator.of(context)
-                                                      .pop(comment.text);
-                                                  comment.clear();
-                                                }
-                                              },
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-
-                                    // print(value);
-
-                                    if (value != null) {
-                                      var commentLocal =
-                                          '${widget.item.comment}- ( $value ${DateTime.now().toString().substring(0, 19)} )';
-                                      if (widget.item.comment == 'N/A') {
-                                        commentLocal = value;
-                                      }
-                                      updateFromComment(
-                                          widget.item.id, commentLocal);
-                                      widget.item.comment = commentLocal;
-                                      setState(() {});
-                                    }
-                                  },
-                                  child: const Text('Comentar',
-                                      style: TextStyle(color: Colors.black))),
-                            ),
-                            const SizedBox(width: 10),
-                            Container(
-                              color: Colors.white,
-                              child: TextButton(
-                                  onPressed: () async {
-                                    Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AddItemOrden(
-                                                        item: widget.item)))
-                                        .then((value) => {
-                                              getSeguimiento(),
-                                            });
-                                  },
-                                  child: const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 10),
-                                    child: Text('Agregar Productos',
-                                        style: TextStyle(color: Colors.black)),
-                                  )),
-                            ),
-                            const SizedBox(width: 10),
-                            isEntrega
-                                ? Container(
-                                    width: 150,
-                                    color: Colors.white,
-                                    child: TextButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            isLoading = true;
-                                          });
-                                          entregarOrden(receptionProvider);
-                                        },
-                                        child: const Text('Entregar')),
-                                  )
-                                : const SizedBox()
+                            const Text('Facturado a:',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            const SizedBox(width: 5),
+                            Text(currentUsers?.fullName ?? 'N/A'),
                           ],
                         ),
-                      ),
-                    ),
+                      ],
+                      const SizedBox(height: 20),
+
+                      // Cliente
+                    ],
                   ),
-            identy(context),
-          ],
-        ),
-      ),
-    );
-  }
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      // ✅ CÓDIGO QR del ID de la factura
+                      if (widget.factura!.numOrden != null)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height: 100,
+                              // width: 100,
+                              child: PrettyQrView.data(
+                                data: widget.factura!.numOrden ?? 'N/A',
+                                decoration: const PrettyQrDecoration(
+                                  shape: PrettyQrSmoothSymbol(
+                                      color: Colors.black, roundFactor: 1),
+                                  image: PrettyQrDecorationImage(
+                                      image: AssetImage(
+                                          'assets/tatami_logo_mariposa.png'),
+                                      position: PrettyQrDecorationImagePosition
+                                          .embedded),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      const SizedBox(height: 10),
+                      Text('Factura : ----',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
 
-  void validadListaTerminada(List<PlanificacionItem> listLocal) {
-    bool allItemsAreDone = listLocal.every((item) => item.isDone == 't');
-    if (allItemsAreDone) {
-      setState(() {
-        isEntrega = true;
-      });
-    } else {
-      setState(() {
-        isEntrega = false;
-      });
-    }
-  }
+                      // const SizedBox(height: 5),
+                      const SizedBox(height: 5),
+                      Text('Pedido #: P111048'),
+                      Text(
+                          'Fecha de Entrega: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.factura!.fechaEntrega ?? ''))}'),
+                      Text('Vendedor: _ ${widget.factura!.fullName ?? 'N/A'}_'),
+                      const SizedBox(height: 10),
 
-  Future entregarOrden(ReceptionProviderPlanificacion receptionProvider) async {
-    // print(widget.item.comment);
-    String comentLocal = widget.item.comment.toString();
-    if (comentLocal == 'N/A') {
-      comentLocal =
-          'Se Entrego al Cliente Ala ( ${DateTime.now().toString().substring(0, 19)} )';
-    } else {
-      comentLocal =
-          '${widget.item.comment}, Se Entrego al Cliente A la ( ${DateTime.now().toString().substring(0, 19)} )';
-    }
-    var dataSend = {
-      'date_delivered': DateTime.now().toString().substring(0, 19),
-      'user_entrega_orden': currentUsers?.fullName.toString(),
-      'is_entregado': 't',
-      'comment': comentLocal,
-      'is_key_unique_product': widget.item.isKeyUniqueProduct,
-    };
+                      Row(
+                        children: [
+                          Text('NCF : ',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                          Text('----',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                      if (widget.factura! != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Column(
+                            children: [
+                              const Text('Válida hasta 31/12/2022'),
+                              // Text(item!.tipoNcf!.toUpperCase(),
+                              //     style: TextStyle(fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
 
-    var dataRegister = {
-      'num_orden': widget.item.numOrden,
-      'fecha': DateTime.now().toString().substring(0, 10),
-      'statu': 'Salidas',
-      'user_register': currentUsers?.fullName.toString(),
-    };
-
-    // $num_orden = $_POST['num_orden'];
-    // $fecha = $_POST['fecha'];
-    // $statu = $_POST['statu'];
-    // $user_register = $_POST['user_register'];
-    await httpRequestDatabase(insertReportEntradaSalidaReception, dataRegister);
-    await httpRequestDatabase(updatePlanificacionLast, dataSend);
-    // print('Terminando Orden ${res.body}');
-    receptionProvider.getReceptionPlanificacionAll(
-        DateTime.now().toString().substring(0),
-        DateTime.now().toString().substring(0));
-    if (mounted) {
-      Navigator.pop(context);
-    }
-  }
-
-  ///////este eliminar los item de una orden completa///
-  Future eliminarOrden(id) async {
-    await httpRequestDatabase(deleteProductoPlanificacionLast, {'id': '$id'});
-    // print(res.body);
-    list.removeWhere((item) => item.id == id);
-    setState(() {});
-  }
-}
-
-Future statuMethond(PlanificacionItem? current, {required String statu}) async {
-  var data = {
-    'id': current?.isKeyUniqueProduct,
-    'statu': statu,
-  };
-  final res = await httpRequestDatabase(updatePlanificacionLastStatu, data);
-  // print(res.body);
-  if (res.body.toString() == 'good') {}
-}
-
-class TableModifica extends StatelessWidget {
-  const TableModifica({Key? key, this.current, required this.pressDelete})
-      : super(key: key);
-  final List<PlanificacionItem>? current;
-  final Function pressDelete;
-
-  Color getColor(PlanificacionItem planificacion) {
-    if (planificacion.statu == onProducion) {
-      return Colors.cyan.shade100;
-    }
-    if (planificacion.statu == onEntregar) {
-      return Colors.orangeAccent.shade100;
-    }
-    if (planificacion.statu == onParada) {
-      return Colors.redAccent.shade100;
-    }
-    if (planificacion.statu == onProceso) {
-      return Colors.teal.shade100;
-    }
-    if (planificacion.statu == onFallo) {
-      return Colors.black54;
-    }
-    if (planificacion.statu == onDone) {
-      return Colors.green.shade100;
-    }
-    return Colors.white;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 25),
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          physics: const BouncingScrollPhysics(),
-          child: DataTable(
-            dataRowMaxHeight: 25,
-            dataRowMinHeight: 20,
-            horizontalMargin: 10.0,
-            columnSpacing: 15,
-            headingRowHeight: 30,
-            decoration: const BoxDecoration(color: colorsOrange),
-            headingTextStyle: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold),
-            border: TableBorder.symmetric(
-                outside: BorderSide(
-                    color: Colors.grey.shade100, style: BorderStyle.none),
-                inside: const BorderSide(
-                    style: BorderStyle.solid, color: Colors.grey)),
-            columns: const [
-              DataColumn(label: Text('DETALLES')),
-              DataColumn(label: Text('----')),
-              DataColumn(label: Text('DEPARTAMENTO')),
-              DataColumn(label: Text('ESTADO')),
-              DataColumn(label: Text('# ORDEN')),
-              DataColumn(label: Text('FICHA')),
-              DataColumn(label: Text('LOGO')),
-              DataColumn(label: Text('DETALLES')),
-              DataColumn(label: Text('QTY')),
-              DataColumn(label: Text('COMMENT')),
-              DataColumn(label: Text('ELIMINAR')),
-            ],
-            rows: current!.asMap().entries.map((entry) {
-              int index = entry.key;
-              var item = entry.value;
-              return DataRow(
-                color: MaterialStateProperty.resolveWith(
-                    (states) => getColorPriority(item.priority ?? '')),
-                cells: [
-                  DataCell(
-                      const Text('Click ! ',
-                          style: TextStyle(color: colorsOrange)), onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (conext) => DetallesPlanificacion(
-                    //       currentLocal: item,
-                    //     ),
-                    //   ),
-                    // );
-                  }),
-                  DataCell(Text((item.priority ?? ''))),
-                  DataCell(Text(item.department ?? '')),
-                  DataCell(Text(item.statu ?? '')),
-                  DataCell(Center(child: Text(item.numOrden ?? '')), onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (conext) =>
-                              FileViewer(numOrden: item.numOrden)),
+              // Detalles productos
+              Table(
+                border: TableBorder.all(color: Colors.grey),
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                columnWidths: const {
+                  0: FixedColumnWidth(80), // Código
+                  1: FlexColumnWidth(), // Descripción
+                  2: FixedColumnWidth(100), // Cant
+                  3: FixedColumnWidth(100), // Precio
+                  4: FixedColumnWidth(100), // Total
+                },
+                children: [
+                  TableRow(
+                    decoration: const BoxDecoration(color: Colors.grey),
+                    children: const [
+                      Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Text('Código',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                      Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Text('Descripción',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                      Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Text('Cant.',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                      Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Text('Precio',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                      Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Text('Total',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                    ],
+                  ),
+                  ...widget.factura!.ordenItem!.map((itemDetalles) {
+                    final totalLinea =
+                        double.parse(itemDetalles.precioFinal ?? '0.0') *
+                            itemDetalles.cant!;
+                    return TableRow(
+                      children: [
+                        Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Text(
+                                'CODG:${itemDetalles.idProducto.toString()}')),
+                        Padding(
+                            padding: EdgeInsets.all(5),
+                            child:
+                                Text(itemDetalles.detallesProductos ?? 'N/A')),
+                        Center(child: Text('${itemDetalles.cant}')),
+                        Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Text(
+                                '\$ ${getNumFormatedUS(itemDetalles.precioFinal ?? '0')!}')),
+                        Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Text(
+                                '\$ ${getNumFormatedUS(totalLinea.toStringAsFixed(2))}')),
+                      ],
                     );
                   }),
-                  DataCell(Center(child: Text(item.ficha ?? ''))),
-                  DataCell(Text(item.nameLogo ?? '')),
-                  DataCell(Text(item.tipoProduct ?? '')),
-                  DataCell(Text(item.cant ?? '')),
-                  DataCell(
-                      Text(
-                        item.comment != null && item.comment!.length > 25
-                            ? '${item.comment!.substring(0, 25)}...'
-                            : item.comment ?? '',
-                      ),
-                      onTap: () =>
-                          utilShowMesenger(context, item.comment ?? '')),
-                  DataCell(
-                    hasPermissionUsuario(
-                            currentUsers!.listPermission!, "admin", "eliminar")
-                        ? TextButton(
-                            child: const Text('Eliminar',
-                                style: TextStyle(color: Colors.red)),
-                            onPressed: () => pressDelete(item.id),
-                          )
-                        : const Text('Sin Permiso'),
-                  )
                 ],
-              );
-            }).toList(),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Columna izquierda: Nota + Transferencia
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '⚠ Nota de Pago:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Colors.deepPurple,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '• Cheque a nombre de: ${currentEmpresa.nombreEmpresa!.toUpperCase()}',
+                          style: TextStyle(fontSize: 13),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '• Transferencia bancaria:\n  Banco ****\n  Cuenta Corriente: 794-****\n  Beneficiario: ${currentEmpresa.nombreEmpresa}\n  (Indicar número de orden de pedido)',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Divider(),
+                        const SizedBox(height: 8),
+                        const Text(
+                          '✨ Producto bordado con dedicación y detalle.',
+                          style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          '🇩🇴 Hecho a mano en República Dominicana.',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: Colors.teal,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Expanded(
+                  //   flex: 3,
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: const [
+                  //       Text('Note : Cheque a Nombre  de JAVIER ANTONIO REGALADO'),
+                  //       SizedBox(height: 5),
+                  //       Text(
+                  //         'Transferencia : Banco Popular cuenta Corriente # 794228650  Beneficiario\nJavier Ant. Recalado (Indicar Orden de Pedido)',
+                  //         style: TextStyle(fontWeight: FontWeight.bold),
+                  //       ),
+                  //       SizedBox(height: 5),
+                  //       Text('Made in Dominican Republic.'),
+                  //     ],
+                  //   ),
+                  // ),
+
+                  // Columna derecha: Totales
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        _buildTotalRow('Total Bruto.:', 0),
+                        _buildTotalRow('Descuento.:', 0.0),
+                        _buildTotalRow('Monto Exento.:', 0.0),
+                        _buildTotalRow('Base Imponible.:', 0),
+                        const Divider(color: Colors.black26),
+                        _buildTotalRow('Sub-Total.:', 0),
+                        _buildTotalRow('ITBIS:', 0),
+                        const Divider(color: Colors.black26),
+                        _buildTotalRow('Total  RD\$.', 0, isBold: true),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 15),
+
+              // Pie de página
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Text('Estado : ${item?.estado ?? ''}'),
+                  const SizedBox(),
+                  Text(
+                      'Fecha - ${DateFormat('dd/MM/yyyy hh:mm:ss a').format(DateTime.now())}'),
+                ],
+              ),
+            ],
           ),
-        ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTotalRow(String label, double value, {bool isBold = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label,
+              style:
+                  isBold ? const TextStyle(fontWeight: FontWeight.bold) : null),
+          Text('\$${value.toStringAsFixed(2)}',
+              style:
+                  isBold ? const TextStyle(fontWeight: FontWeight.bold) : null),
+        ],
       ),
     );
   }
 }
 
-bool comparaTime(DateTime time1) {
-  // Creamos las dos fechas a comparar
-  // DateTime fecha1 = DateTime(2022, 5, 1);
-  DateTime fecha2 = DateTime.now();
-  DateTime soloFecha = DateTime(fecha2.year, fecha2.month, fecha2.day - 1);
-  // debugPrint('Fecha de Entrega es : $soloFecha comparar con $fecha2');
-  // print('La fecha soloFecha $soloFecha');
-  if (soloFecha.isBefore(time1)) {
-    // print(true);
-    return true;
-  } else {
-    // print(false);
-    return false;
-  }
+// class SeguimientoOrden extends StatefulWidget {
+//   const SeguimientoOrden({super.key, required this.item});
+//   final OrdenList? item;
 
-// // Comparamos las fechas
-  // if (time1.isAfter(soloFecha)) {
-  //   print('Ya se cumplio la fecha');
-  //   print(true);
-  //   return true;
-  // }
-  // return false;
-}
+//   @override
+//   State<SeguimientoOrden> createState() => _SeguimientoOrdenState();
+// }
+
+// class _SeguimientoOrdenState extends State<SeguimientoOrden> {
+//   @override
+//   Widget build(BuildContext context) {
+//     final orden = widget.item;
+
+//     if (orden == null) {
+//       return const Scaffold(
+//         body: Center(child: Text('No se encontró la orden')),
+//       );
+//     }
+
+//     final cliente = orden.cliente;
+//     final productos = orden.ordenItem ?? [];
+
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Pre Orden'),
+//         actions: [
+//           IconButton(
+//             icon: const Icon(Icons.picture_as_pdf),
+//             onPressed: () {
+//               // Acción para convertir en factura o generar PDF
+//             },
+//           )
+//         ],
+//       ),
+//       body: SingleChildScrollView(
+//         padding: const EdgeInsets.all(16.0),
+//         physics: const BouncingScrollPhysics(),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             // 🧾 Info Orden
+//             Text('Orden #${orden.numOrden}',
+//                 style: Theme.of(context).textTheme.titleLarge),
+//             const SizedBox(height: 8),
+//             Text('Fecha de creación: ${orden.fechaCreacion}'),
+//             Text('Fecha de entrega: ${orden.fechaEntrega}'),
+//             Text('Estado general: ${orden.estadoGeneral}'),
+//             Text('Estado entrega: ${orden.estadoEntrega}'),
+//             Text('Prioridad: ${orden.estadoPrioritario}'),
+//             Text('Logo: ${orden.nameLogo}'),
+//             Text('Ficha: ${orden.ficha}'),
+//             Text('Observaciones: ${orden.observaciones ?? 'N/A'}'),
+//             const Divider(height: 30),
+//             // 👤 Info Cliente
+//             Text('Cliente', style: Theme.of(context).textTheme.titleLarge),
+//             Text('${cliente?.nombre ?? ''} ${cliente?.apellido ?? ''}'),
+//             Text('Dirección: ${cliente?.direccion ?? ''}'),
+//             Text('Teléfono: ${cliente?.telefono ?? ''}'),
+//             Text('Correo: ${cliente?.correoElectronico ?? ''}'),
+//             const Divider(height: 30),
+
+//             // 📦 Productos (usando tu DataTable personalizado)
+//             Text('Detalle de Productos',
+//                 style: Theme.of(context).textTheme.titleLarge),
+//             const SizedBox(height: 10),
+
+//             SingleChildScrollView(
+//               scrollDirection: Axis.horizontal,
+//               child: DataTable(
+//                 dataRowMaxHeight: 25,
+//                 dataRowMinHeight: 20,
+//                 horizontalMargin: 10.0,
+//                 columnSpacing: 15,
+//                 headingRowHeight: 30,
+//                 decoration: const BoxDecoration(color: colorsOrange),
+//                 headingTextStyle: const TextStyle(
+//                     color: Colors.white, fontWeight: FontWeight.bold),
+//                 border: TableBorder.symmetric(
+//                   outside: BorderSide(
+//                       color: Colors.grey.shade100, style: BorderStyle.none),
+//                   inside: const BorderSide(
+//                       style: BorderStyle.solid, color: Colors.grey),
+//                 ),
+//                 columns: const [
+//                   DataColumn(label: Text('DETALLES')),
+//                   DataColumn(label: Text('----')),
+//                   DataColumn(label: Text('DEPARTAMENTO')),
+//                   DataColumn(label: Text('ESTADO')),
+//                   DataColumn(label: Text('# ORDEN')),
+//                   DataColumn(label: Text('FICHA')),
+//                   DataColumn(label: Text('LOGO')),
+//                   DataColumn(label: Text('DETALLES')),
+//                   DataColumn(label: Text('QTY')),
+//                   DataColumn(label: Text('COMMENT')),
+//                   DataColumn(label: Text('ELIMINAR')),
+//                 ],
+//                 rows: productos.asMap().entries.map((entry) {
+//                   int index = entry.key;
+//                   var item = entry.value;
+//                   return DataRow(
+//                     color: WidgetStateProperty.resolveWith((states) =>
+//                         getColorPriority(item.estadoProduccion ?? '')),
+//                     cells: [
+//                       DataCell(const Text('Click !',
+//                           style: TextStyle(color: colorsOrange))),
+//                       DataCell(Text(item.estadoProduccion ?? '')),
+//                       DataCell(Text(item.detallesProductos ?? '')),
+//                       DataCell(Text(item.estadoProduccion ?? '')),
+//                       DataCell(Center(child: Text('${orden.numOrden}'))),
+//                       DataCell(Text('${orden.ficha}')),
+//                       DataCell(Text('${orden.nameLogo}')),
+//                       DataCell(Text(item.detallesProductos ?? '')),
+//                       DataCell(Text(item.cant.toString())),
+//                       DataCell(Text(item.nota ?? '')),
+//                       DataCell(
+//                         hasPermissionUsuario(currentUsers!.listPermission!,
+//                                 "admin", "eliminar")
+//                             ? TextButton(
+//                                 child: const Text('Eliminar',
+//                                     style: TextStyle(color: Colors.red)),
+//                                 onPressed: () {
+//                                   // Acción eliminar
+//                                 },
+//                               )
+//                             : const Text('Sin Permiso'),
+//                       ),
+//                     ],
+//                   );
+//                 }).toList(),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

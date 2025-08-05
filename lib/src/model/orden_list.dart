@@ -4,6 +4,11 @@
 
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+
+import '../folder_cliente_company/model_cliente/cliente.dart';
+import 'orden_item.dart';
+
 List<OrdenList> ordenListFromJson(String str) =>
     List<OrdenList>.from(json.decode(str).map((x) => OrdenList.fromJson(x)));
 
@@ -30,6 +35,17 @@ class OrdenList {
   String? idDepart;
   String? estadoPlanificacionWork;
 
+  String? listOrdenesId;
+  String? fechaCreacion;
+  String? estadoGeneral;
+  String? estadoEntrega;
+  String? observaciones;
+  String? usuarioId;
+  String? fullName;
+  Cliente? cliente;
+
+  List<OrdenItem>? ordenItem;
+
   OrdenList({
     this.planificacionWorkId,
     this.nameDepartment,
@@ -49,6 +65,15 @@ class OrdenList {
     this.fechaItemCreacion,
     this.idDepart,
     this.estadoPlanificacionWork,
+    this.listOrdenesId,
+    this.fechaCreacion,
+    this.estadoGeneral,
+    this.estadoEntrega,
+    this.observaciones,
+    this.usuarioId,
+    this.cliente,
+    this.ordenItem,
+    this.fullName,
   });
 
   factory OrdenList.fromJson(Map<String, dynamic> json) => OrdenList(
@@ -70,6 +95,19 @@ class OrdenList {
         fechaItemCreacion: json["fecha_item_creacion"],
         idDepart: json["id_depart"],
         estadoPlanificacionWork: json["estado_planificacion_work"],
+        listOrdenesId: json["list_ordenes_id"],
+        fechaCreacion: json["fecha_creacion"],
+        estadoGeneral: json["estado_general"],
+        estadoEntrega: json["estado_entrega"],
+        observaciones: json["observaciones"],
+        usuarioId: json["usuario_id"],
+        fullName: json['full_name'],
+        cliente:
+            json["cliente"] == null ? null : Cliente.fromJson(json["cliente"]),
+        ordenItem: json["orden_item"] == null
+            ? []
+            : List<OrdenItem>.from(
+                json["orden_item"]!.map((x) => OrdenItem.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -91,6 +129,17 @@ class OrdenList {
         "fecha_item_creacion": fechaItemCreacion,
         "id_depart": idDepart,
         "estado_planificacion_work": estadoPlanificacionWork,
+        "list_ordenes_id": listOrdenesId,
+        "fecha_creacion": fechaCreacion,
+        "estado_general": estadoGeneral,
+        "estado_entrega": estadoEntrega,
+        "observaciones": observaciones,
+        "usuario_id": usuarioId,
+        "cliente": cliente?.toJson(),
+        "full_name": fullName,
+        "orden_item": ordenItem == null
+            ? []
+            : List<dynamic>.from(ordenItem!.map((x) => x.toJson())),
       };
 
   static List<String> getUniqueDepartmentList(List<OrdenList> list) {
@@ -111,5 +160,27 @@ class OrdenList {
       value += double.parse(element.cant ?? '0.0');
     }
     return value.toStringAsFixed(0);
+  }
+
+  static Color getColor(OrdenList planificacion) {
+    // if (planificacion.estadoGeneral == onProducion) {
+    //   return Colors.cyan.shade100;
+    // }
+    // if (planificacion.statu == onEntregar) {
+    //   return Colors.orange.shade100;
+    // }
+    // if (planificacion.statu == onParada) {
+    //   return Colors.redAccent.shade200;
+    // }
+    // if (planificacion.statu == onProceso) {
+    //   return Colors.teal.shade200;
+    // }
+    // if (planificacion.statu == onFallo) {
+    //   return Colors.black54;
+    // }
+    // if (planificacion.statu == onDone) {
+    //   return Colors.green.shade200;
+    // }
+    return Colors.white;
   }
 }

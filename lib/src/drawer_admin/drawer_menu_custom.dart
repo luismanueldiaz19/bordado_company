@@ -4,6 +4,7 @@ import '../compras/add_compra.dart';
 import '../compras/screen_compras.dart';
 import '../folder_inventario/salidas_inventario.dart';
 
+import '../nivel_2/folder_reception/screen_reception_entregas.dart';
 import '../nivel_2/pre_orden/add_pre_orden.dart';
 import '/src/datebase/current_data.dart';
 import '/src/folder_admin_user/add_user.dart';
@@ -340,6 +341,21 @@ class _DrawerMenuCustomState extends State<DrawerMenuCustom> {
                                       );
                                     },
                                     textButton: 'Crear Orden')
+                                : const SizedBox(),
+                            hasPermissionUsuario(currentUsers!.listPermission!,
+                                    "planificacion", "crear")
+                                ? MyWidgetButton(
+                                    icon: Icons.list_alt_rounded,
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (conext) =>
+                                              const ScreenReceptionEntregas(),
+                                        ),
+                                      );
+                                    },
+                                    textButton: 'Listado Ordenes')
                                 : const SizedBox(),
                             MyWidgetButton(
                                 icon: Icons.plagiarism_outlined,

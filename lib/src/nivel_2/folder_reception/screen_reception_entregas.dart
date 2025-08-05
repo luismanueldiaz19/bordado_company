@@ -2,19 +2,16 @@ import 'dart:convert';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import '../folder_planificacion/folder_print_planificacion/print_main_planificacion.dart';
+import '../../model/orden_list.dart';
 import '../pre_orden/add_pre_orden.dart';
 import '/src/datebase/current_data.dart';
 import '/src/datebase/methond.dart';
 import '/src/model/users.dart';
-import '/src/nivel_2/folder_planificacion/add_planificacion.dart';
-import '/src/nivel_2/folder_re_orden/dialog_reorden_record.dart';
 import '/src/nivel_2/folder_reception/file_view_orden.dart';
 import '/src/nivel_2/folder_reception/historia_record/screen_record_reception.dart';
 import '/src/nivel_2/folder_reception/custom_delegate_searching.dart';
 import '/src/nivel_2/folder_reception/seguimiento_orden.dart';
-import '/src/screen_print_pdf/apis/pdf_api.dart';
-import '/src/util/get_formatted_number.dart';
+
 import '/src/util/show_mesenger.dart';
 import '/src/widgets/validar_screen_available.dart';
 import '../../datebase/url.dart';
@@ -22,14 +19,10 @@ import '../../util/commo_pallete.dart';
 import '../../util/dialog_confimarcion.dart';
 import '../../util/helper.dart';
 import '../../widgets/picked_date_widget.dart';
-import '../folder_planificacion/model_planificacion/item_planificacion.dart';
 import '../folder_planificacion/model_planificacion/planificacion_last.dart';
-import '../folder_planificacion/url_planificacion/url_planificacion.dart';
 import '../folder_re_orden/dialog_reorden.dart';
 import '../folder_re_orden/model/reorden.dart';
 import 'folder_admin_re_orden/screen_admin_re_orden.dart';
-import 'folder_historia_cliente_orden/screen_historia_cliente_orden.dart';
-import 'print_reception/print_reception_orden.dart';
 
 class ScreenReceptionEntregas extends StatefulWidget {
   const ScreenReceptionEntregas({super.key});
@@ -40,10 +33,15 @@ class ScreenReceptionEntregas extends StatefulWidget {
 }
 
 class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
-  List<PlanificacionLast> planificacionList = [];
-  List<PlanificacionLast> planificacionListFilter = [];
-  bool _isAscendingFicha = true;
-  bool _isAscendingCliente = true;
+  // List<OrdenList> planificacionList = [];
+  // List<OrdenList> planificacionListFilter = [];
+  // bool _isAscendingFicha = true;
+  // bool _isAscendingCliente = true;
+
+  List<OrdenList> listOrdenes = [];
+  List<OrdenList> listOrdenesFilter = [];
+
+  ///List<OrdenList> ordenListFromJson(
 
   String modoEstado = "";
   String usuario = "";
@@ -54,49 +52,58 @@ class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
   ///ordenes no entregado
   Future getReception() async {
     final res = await httpRequestDatabase(
-        selectPlanificacionLast, {'date1': firstDate, 'date2': secondDate});
-    // print(res.body);
-    planificacionList = planificacionLastFromJson(res.body);
-    planificacionListFilter = List.from(planificacionList);
-    if (!mounted) return null;
-    setState(() {});
+        'http://$ipLocal/$pathLocal/pre_orden/get_pre_orden.php',
+        {'date1': firstDate, 'date2': secondDate});
+    print(res.body);
+    final valueFetch = jsonDecode(res.body);
+
+    if (valueFetch['success']) {
+      listOrdenes = ordenListFromJson(jsonEncode(valueFetch['data']));
+      listOrdenesFilter = listOrdenes;
+      setState(() {});
+
+      print(listOrdenesFilter.length);
+    }
+
+    // if (!mounted) return null;
+    // setState(() {});
   }
 
   void shomMjs(String msj) => utilShowMesenger(context, msj);
 
   ///ordenes no entregado
   Future getMonthly(date1, date2) async {
-    setState(() {
-      planificacionList.clear();
-      planificacionListFilter.clear();
-    });
-    final res = await httpRequestDatabase(
-        selectPlanificacionByMothEntregas, {'date1': date1, 'date2': date2});
-    planificacionList = planificacionLastFromJson(res.body);
+    // setState(() {
+    //   planificacionList.clear();
+    //   planificacionListFilter.clear();
+    // });
+    // final res = await httpRequestDatabase(
+    //     selectPlanificacionByMothEntregas, {'date1': date1, 'date2': date2});
+    // planificacionList = planificacionLastFromJson(res.body);
 
-    setState(() {
-      planificacionListFilter = planificacionList;
-    });
+    // setState(() {
+    //   planificacionListFilter = planificacionList;
+    // });
   }
 
   Future getMonthlyCreated(date1, date2) async {
-    setState(() {
-      planificacionList.clear();
-      planificacionListFilter.clear();
-    });
-    final res = await httpRequestDatabase(
-        selectPlanificacionByMonthlyCreated, {'date1': date1, 'date2': date2});
-    planificacionList = planificacionLastFromJson(res.body);
+    // setState(() {
+    //   planificacionList.clear();
+    //   planificacionListFilter.clear();
+    // });
+    // final res = await httpRequestDatabase(
+    //     selectPlanificacionByMonthlyCreated, {'date1': date1, 'date2': date2});
+    // planificacionList = planificacionLastFromJson(res.body);
 
-    setState(() {
-      planificacionListFilter = planificacionList;
-    });
+    // setState(() {
+    //   planificacionListFilter = planificacionList;
+    // });
   }
 
   @override
   void initState() {
     super.initState();
-    getReorden();
+    // getReorden();
     getReception();
   }
 
@@ -120,8 +127,8 @@ class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
                 final data = jsonDecode(res.body);
                 if (data['success']) {
                   setState(() {
-                    planificacionList.remove(item);
-                    planificacionListFilter.remove(item);
+                    // planificacionList.remove(item);
+                    // planificacionListFilter.remove(item);
                   });
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text(data['message']),
@@ -148,61 +155,61 @@ class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
   }
 
   searchingOrden(String val) {
-    if (val.isNotEmpty) {
-      planificacionListFilter = List.from(planificacionList
-          .where((x) =>
-              x.ficha!.toUpperCase().contains(val.toUpperCase()) ||
-              x.numOrden!.toUpperCase().contains(val.toUpperCase()) ||
-              x.nameLogo!.toUpperCase().contains(val.toUpperCase()) ||
-              x.clienteTelefono!.toUpperCase().contains(val.toUpperCase()) ||
-              x.cliente!.toUpperCase().contains(val.toUpperCase()))
-          .toList());
-      setState(() {});
-    } else {
-      setState(() {
-        planificacionListFilter = [...planificacionList];
-      });
-    }
+    // if (val.isNotEmpty) {
+    //   planificacionListFilter = List.from(planificacionList
+    //       .where((x) =>
+    //           x.ficha!.toUpperCase().contains(val.toUpperCase()) ||
+    //           x.numOrden!.toUpperCase().contains(val.toUpperCase()) ||
+    //           x.nameLogo!.toUpperCase().contains(val.toUpperCase()) ||
+    //           x.clienteTelefono!.toUpperCase().contains(val.toUpperCase()) ||
+    //           x.cliente!.toUpperCase().contains(val.toUpperCase()))
+    //       .toList());
+    //   setState(() {});
+    // } else {
+    //   setState(() {
+    //     planificacionListFilter = [...planificacionList];
+    //   });
+    // }
   }
 
   atrasada() {
-    List<PlanificacionLast> lisLocal = [];
-    for (var item in planificacionList) {
-      if (PlanificacionLast.comparaTime(
-              DateTime.parse(item.fechaEntrega ?? '')) &&
-          item.statu?.toUpperCase() != onEntregar.toUpperCase()) {
-        lisLocal.add(item);
-      }
-    }
-    planificacionListFilter = lisLocal;
-    setState(() {});
+    // List<PlanificacionLast> lisLocal = [];
+    // for (var item in planificacionList) {
+    //   if (PlanificacionLast.comparaTime(
+    //           DateTime.parse(item.fechaEntrega ?? '')) &&
+    //       item.statu?.toUpperCase() != onEntregar.toUpperCase()) {
+    //     lisLocal.add(item);
+    //   }
+    // }
+    // planificacionListFilter = lisLocal;
+    // setState(() {});
   }
 
   searchingEstadoEmpleado() {
-    setState(() {
-      planificacionListFilter = List.from(planificacionList
-          .where((x) =>
-              x.userRegistroOrden!.toUpperCase() == usuario.toUpperCase() &&
-              x.statu!.toUpperCase() == modoEstado.toUpperCase())
-          .toList());
-    });
+    // setState(() {
+    //   planificacionListFilter = List.from(planificacionList
+    //       .where((x) =>
+    //           x.userRegistroOrden!.toUpperCase() == usuario.toUpperCase() &&
+    //           x.statu!.toUpperCase() == modoEstado.toUpperCase())
+    //       .toList());
+    // });
   }
 
   normalizarWithRegisterOrden() {
-    setState(() {
-      planificacionListFilter = planificacionList
-          .where((element) =>
-              element.userRegistroOrden?.toUpperCase() == usuario.toUpperCase())
-          .toList();
-    });
+    // setState(() {
+    //   planificacionListFilter = planificacionList
+    //       .where((element) =>
+    //           element.userRegistroOrden?.toUpperCase() == usuario.toUpperCase())
+    //       .toList();
+    // });
   }
 
   searchingOnlyEstado() {
-    setState(() {
-      planificacionListFilter = List.from(planificacionList
-          .where((x) => x.statu!.toUpperCase() == modoEstado.toUpperCase())
-          .toList());
-    });
+    // setState(() {
+    //   planificacionListFilter = List.from(planificacionList
+    //       .where((x) => x.statu!.toUpperCase() == modoEstado.toUpperCase())
+    //       .toList());
+    // });
   }
 
   Color getNombre(userRegited) {
@@ -239,17 +246,17 @@ class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
     }
   }
 
-  void settingContabilidad(PlanificacionLast item) async {
-    await showDialog(
-        context: context, builder: (context) => builder(context, item));
-  }
+  // void settingContabilidad(PlanificacionLast item) async {
+  //   await showDialog(
+  //       context: context, builder: (context) => builder(context, item));
+  // }
 
   searchingPriority(value) {
-    // _departmentSelected = value;
+    // // _departmentSelected = value;
 
-    planificacionListFilter = List.from(planificacionList
-        .where((x) => x.priority!.toUpperCase().contains(value.toUpperCase()))
-        .toList());
+    // planificacionListFilter = List.from(planificacionList
+    //     .where((x) => x.priority!.toUpperCase().contains(value.toUpperCase()))
+    //     .toList());
     setState(() {});
   }
 
@@ -326,10 +333,10 @@ class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
   }
 
   void normalizaList() {
-    setState(() {
-      usuario = '';
-      planificacionListFilter = List.from(planificacionList);
-    });
+    // setState(() {
+    //   usuario = '';
+    //   planificacionListFilter = List.from(planificacionList);
+    // });
   }
 
   @override
@@ -339,7 +346,7 @@ class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
         BoxShadow(color: Colors.black26, offset: Offset(0, 4), blurRadius: 10);
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Entregas De Saquetas'),
+          title: const Text('Listado Ordenes'),
           actions: [
             Tooltip(
               message: 'Quitar filtro',
@@ -356,11 +363,11 @@ class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
                 child: IconButton(
                   icon: const Icon(Icons.print_outlined, color: Colors.black),
                   onPressed: () async {
-                    if (planificacionListFilter.isNotEmpty) {
-                      final file = await PrintMainPlanificacionLast.generate(
-                          planificacionListFilter);
-                      await PdfApi.openFile(file);
-                    }
+                    // if (planificacionListFilter.isNotEmpty) {
+                    //   final file = await PrintMainPlanificacionLast.generate(
+                    //       planificacionListFilter);
+                    //   await PdfApi.openFile(file);
+                    // }
                   },
                 ),
               ),
@@ -378,10 +385,10 @@ class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
                           modoEstado = "";
                           firstDate = dateee.toString();
                           secondDate = dateee.toString();
-                          planificacionList.clear();
-                          planificacionListFilter.clear();
+                          // planificacionList.clear();
+                          // planificacionListFilter.clear();
                         });
-                        getReception();
+                        // getReception();
                         getReorden();
                       }
                     },
@@ -403,16 +410,16 @@ class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
                         )
                       : () {};
                 } else if (index == 3) {
-                  if (planificacionListFilter.isNotEmpty) {
-                    final pdfFile = await PdfReceptionOrdenes.generate(
-                        planificacionListFilter,
-                        firstDate,
-                        secondDate,
-                        'atrazadas',
-                        PlanificacionLast.totalOrdenEntregar(
-                            planificacionListFilter));
-                    PdfApi.openFile(pdfFile);
-                  }
+                  // if (planificacionListFilter.isNotEmpty) {
+                  //   final pdfFile = await PdfReceptionOrdenes.generate(
+                  //       planificacionListFilter,
+                  //       firstDate,
+                  //       secondDate,
+                  //       'atrazadas',
+                  //       PlanificacionLast.totalOrdenEntregar(
+                  //           planificacionListFilter));
+                  //   PdfApi.openFile(pdfFile);
+                  // }
                 } else if (index == 4) {
                   Navigator.push(
                     context,
@@ -487,155 +494,156 @@ class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
                     hintText: 'Escribir Algo!',
                     label: 'Buscar'),
               ),
-              SizedBox(
-                height: 40,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: PlanificacionItem.getUniquePriorityList(
-                            planificacionList
-                                .map((e) =>
-                                    PlanificacionItem(priority: e.priority))
-                                .toList())
-                        .map(
-                          (value) => Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 5),
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                                color: getColorPriority(value),
-                                boxShadow: const [shadow]),
-                            child: TextButton(
-                                child: Text(value,
-                                    style: const TextStyle(color: colorsAd)),
-                                onPressed: () => searchingPriority(value)),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 50,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: PlanificacionLast.depurarRegistradorOrden(
-                            planificacionList)
-                        .map((userRegited) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 5),
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: const [shadow],
-                        ),
-                        child: Row(
-                          children: [
-                            TextButton(
-                              child: Text(userRegited,
-                                  style: const TextStyle(color: colorsAd)),
-                              onPressed: () {
-                                setState(() {
-                                  modoEstado = '';
-                                  usuario = userRegited.toUpperCase();
-                                  planificacionListFilter = planificacionList
-                                      .where((element) =>
-                                          element.userRegistroOrden
-                                              ?.toUpperCase() ==
-                                          usuario.toUpperCase())
-                                      .toList();
-                                });
-                              },
-                            ),
-                            usuario.toUpperCase() == userRegited.toUpperCase()
-                                ? IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        usuario = '';
-                                        planificacionListFilter =
-                                            List.from(planificacionList);
-                                      });
-                                    },
-                                    icon: const Icon(Icons.close,
-                                        color: Colors.red))
-                                : const SizedBox()
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 5),
-              SizedBox(
-                height: 35,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: PlanificacionLast.depurraEstadoOrden(
-                              planificacionListFilter)
-                          .map(
-                        (estado) {
-                          return Container(
-                            color: modoEstado == estado
-                                ? Colors.blue.shade100
-                                : Colors.white,
-                            alignment: Alignment.center,
-                            margin: const EdgeInsets.symmetric(horizontal: 10),
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                TextButton(
-                                    onPressed: () {
-                                      modoEstado = estado;
-                                      if (usuario.isEmpty) {
-                                        searchingOnlyEstado();
-                                      } else {
-                                        searchingEstadoEmpleado();
-                                      }
-                                    },
-                                    style: ButtonStyle(
-                                        shape: MaterialStateProperty
-                                            .resolveWith((states) =>
-                                                const RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.zero))),
-                                    child: Text(estado)),
-                                modoEstado == estado
-                                    ? TextButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            modoEstado = '';
-                                            if (usuario.isEmpty) {
-                                              //normalizar lista
-                                              planificacionListFilter =
-                                                  planificacionList;
-                                            } else {
-                                              normalizarWithRegisterOrden();
-                                            }
-                                          });
-                                        },
-                                        child: const Center(
-                                          child: Icon(Icons.close,
-                                              color: Colors.red, size: 15),
-                                        ))
-                                    : const SizedBox()
-                              ],
-                            ),
-                          );
-                        },
-                      ).toList()),
-                ),
-              ),
-              planificacionListFilter.isNotEmpty
+              // SizedBox(
+              //   height: 40,
+              //   child: SingleChildScrollView(
+              //     scrollDirection: Axis.horizontal,
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       children: OrdenList.getUniquePriorityList(
+              //               OrdenList
+              //                   .map((e) =>
+              //                       PlanificacionItem(priority: e.priority))
+              //                   .toList())
+              //           .map(
+              //             (value) => Container(
+              //               margin: const EdgeInsets.symmetric(horizontal: 5),
+              //               padding: const EdgeInsets.symmetric(horizontal: 10),
+              //               decoration: BoxDecoration(
+              //                   color: getColorPriority(value),
+              //                   boxShadow: const [shadow]),
+              //               child: TextButton(
+              //                   child: Text(value,
+              //                       style: const TextStyle(color: colorsAd)),
+              //                   onPressed: () => searchingPriority(value)),
+              //             ),
+              //           )
+              //           .toList(),
+              //     ),
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 50,
+              //   child: SingleChildScrollView(
+              //     scrollDirection: Axis.horizontal,
+              //     physics: const BouncingScrollPhysics(),
+              //     padding: const EdgeInsets.symmetric(horizontal: 5),
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       children: PlanificacionLast.depurarRegistradorOrden(
+              //               planificacionList)
+              //           .map((userRegited) {
+              //         return Container(
+              //           margin: const EdgeInsets.symmetric(horizontal: 5),
+              //           padding: const EdgeInsets.symmetric(horizontal: 10),
+              //           decoration: BoxDecoration(
+              //             color: Colors.white,
+              //             borderRadius: BorderRadius.circular(25),
+              //             boxShadow: const [shadow],
+              //           ),
+              //           child: Row(
+              //             children: [
+              //               TextButton(
+              //                 child: Text(userRegited,
+              //                     style: const TextStyle(color: colorsAd)),
+              //                 onPressed: () {
+              //                   setState(() {
+              //                     modoEstado = '';
+              //                     usuario = userRegited.toUpperCase();
+              //                     planificacionListFilter = planificacionList
+              //                         .where((element) =>
+              //                             element.userRegistroOrden
+              //                                 ?.toUpperCase() ==
+              //                             usuario.toUpperCase())
+              //                         .toList();
+              //                   });
+              //                 },
+              //               ),
+              //               usuario.toUpperCase() == userRegited.toUpperCase()
+              //                   ? IconButton(
+              //                       onPressed: () {
+              //                         setState(() {
+              //                           usuario = '';
+              //                           planificacionListFilter =
+              //                               List.from(planificacionList);
+              //                         });
+              //                       },
+              //                       icon: const Icon(Icons.close,
+              //                           color: Colors.red))
+              //                   : const SizedBox()
+              //             ],
+              //           ),
+              //         );
+              //       }).toList(),
+              //     ),
+              //   ),
+              // ),
+              // const SizedBox(height: 5),
+              // SizedBox(
+              //   height: 35,
+              //   child: SingleChildScrollView(
+              //     scrollDirection: Axis.horizontal,
+              //     child: Row(
+              //         mainAxisAlignment: MainAxisAlignment.center,
+              //         mainAxisSize: MainAxisSize.min,
+              //         children: PlanificacionLast.depurraEstadoOrden(
+              //                 planificacionListFilter)
+              //             .map(
+              //           (estado) {
+              //             return Container(
+              //               color: modoEstado == estado
+              //                   ? Colors.blue.shade100
+              //                   : Colors.white,
+              //               alignment: Alignment.center,
+              //               margin: const EdgeInsets.symmetric(horizontal: 10),
+              //               padding: const EdgeInsets.symmetric(horizontal: 10),
+              //               child: Row(
+              //                 mainAxisAlignment: MainAxisAlignment.center,
+              //                 children: [
+              //                   TextButton(
+              //                       onPressed: () {
+              //                         modoEstado = estado;
+              //                         if (usuario.isEmpty) {
+              //                           searchingOnlyEstado();
+              //                         } else {
+              //                           searchingEstadoEmpleado();
+              //                         }
+              //                       },
+              //                       style: ButtonStyle(
+              //                           shape: MaterialStateProperty
+              //                               .resolveWith((states) =>
+              //                                   const RoundedRectangleBorder(
+              //                                       borderRadius:
+              //                                           BorderRadius.zero))),
+              //                       child: Text(estado)),
+              //                   modoEstado == estado
+              //                       ? TextButton(
+              //                           onPressed: () {
+              //                             setState(() {
+              //                               modoEstado = '';
+              //                               if (usuario.isEmpty) {
+              //                                 //normalizar lista
+              //                                 planificacionListFilter =
+              //                                     planificacionList;
+              //                               } else {
+              //                                 normalizarWithRegisterOrden();
+              //                               }
+              //                             });
+              //                           },
+              //                           child: const Center(
+              //                             child: Icon(Icons.close,
+              //                                 color: Colors.red, size: 15),
+              //                           ))
+              //                       : const SizedBox()
+              //                 ],
+              //               ),
+              //             );
+              //           },
+              //         ).toList()),
+              //   ),
+              // ),
+
+              listOrdenesFilter.isNotEmpty
                   ? Expanded(
                       child: Padding(
                         padding: const EdgeInsets.all(25),
@@ -663,164 +671,57 @@ class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
                                       style: BorderStyle.solid,
                                       color: Colors.grey)),
                               columns: [
-                                const DataColumn(label: Text('Detalles')),
-                                const DataColumn(label: Text('Empleado')),
-                                const DataColumn(label: Text('----')),
-                                const DataColumn(label: Text('# Orden')),
-                                DataColumn(
-                                    label: Row(
-                                  children: [
-                                    const SizedBox(width: 5),
-                                    const Text('Fichas'),
-                                    IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          // Cambiar el estado de ordenación
-                                          _isAscendingFicha =
-                                              !_isAscendingFicha;
-                                          // Ordenar la lista según el estado actual
-                                          planificacionListFilter.sort((a, b) {
-                                            if (_isAscendingFicha) {
-                                              return a.ficha!
-                                                  .compareTo(b.ficha!);
-                                            } else {
-                                              return b.ficha!
-                                                  .compareTo(a.ficha!);
-                                            }
-                                          });
-                                        });
-                                      },
-                                      icon: Icon(
-                                        _isAscendingFicha
-                                            ? Icons.arrow_drop_up
-                                            : Icons.arrow_drop_down_rounded,
-                                        color: _isAscendingFicha
-                                            ? Colors.green
-                                            : Colors.red,
-                                        size: style.titleMedium?.fontSize,
-                                      ),
-                                    ),
-                                  ],
-                                )),
-                                const DataColumn(label: Text('Balance')),
-                                const DataColumn(label: Text('Intervención')),
-                                const DataColumn(label: Text('Comentarios')),
-                                DataColumn(
-                                  label: Row(
-                                    children: [
-                                      const Text('Fecha de entrega'),
-                                      IconButton(
-                                          onPressed: () {
-                                            selectDateRange(context,
-                                                (date1, date2) {
-                                              getMonthly(date1, date2);
-                                              // getMonthlyCreated
-                                            });
-                                          },
-                                          icon: const Icon(
-                                              Icons.calendar_month_outlined,
-                                              color: Colors.white,
-                                              size: 14))
-                                    ],
-                                  ),
-                                ),
-                                const DataColumn(label: Text('Logo')),
-                                const DataColumn(label: Text('Estado')),
-                                DataColumn(
-                                    label: Row(
-                                  children: [
-                                    const SizedBox(width: 5),
-                                    const Text('Cliente'),
-                                    IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          // Cambiar el estado de ordenación
-                                          _isAscendingCliente =
-                                              !_isAscendingCliente;
-                                          // Ordenar la lista según el estado actual
-                                          planificacionListFilter.sort((a, b) {
-                                            if (_isAscendingCliente) {
-                                              return a.ficha!
-                                                  .compareTo(b.cliente!);
-                                            } else {
-                                              return b.ficha!
-                                                  .compareTo(a.cliente!);
-                                            }
-                                          });
-                                        });
-                                      },
-                                      icon: Icon(
-                                        _isAscendingCliente
-                                            ? Icons.arrow_drop_up
-                                            : Icons.arrow_drop_down_rounded,
-                                        color: _isAscendingCliente
-                                            ? Colors.green
-                                            : Colors.red,
-                                        size: style.titleMedium?.fontSize,
-                                      ),
-                                    ),
-                                  ],
-                                )),
-                                const DataColumn(
-                                    label: Text('Cliente Telefono')),
-                                DataColumn(
-                                    label: Row(
-                                  children: [
-                                    const Text('Fecha Creación'),
-                                    IconButton(
-                                        onPressed: () {
-                                          selectDateRange(context,
-                                              (date1, date2) {
-                                            getMonthlyCreated(date1, date2);
-                                          });
-                                        },
-                                        icon: const Icon(
-                                            Icons.calendar_month_outlined,
-                                            color: Colors.white,
-                                            size: 14))
-                                  ],
-                                )),
-                                const DataColumn(label: Text('Eliminar')),
+                                DataColumn(label: Text('Detalles')),
+                                DataColumn(label: Text('Empleado')),
+                                DataColumn(label: Text('Situación')),
+                                DataColumn(label: Text('# Orden')),
+                                DataColumn(label: Text('Fichas')),
+                                DataColumn(label: Text('Comentarios')),
+                                DataColumn(label: Text('Fecha de entrega')),
+                                DataColumn(label: Text('Logo')),
+                                DataColumn(label: Text('Estado')),
+                                DataColumn(label: Text('Cliente')),
+                                DataColumn(label: Text('Cliente Telefono')),
+                                DataColumn(label: Text('Fecha Creación')),
+                                DataColumn(label: Text('Eliminar')),
                               ],
-                              rows: planificacionListFilter
+                              rows: listOrdenesFilter
                                   .asMap()
                                   .entries
                                   .map((entry) {
                                 int index = entry.key;
                                 var item = entry.value;
                                 return DataRow(
-                                  color:
-                                      MaterialStateProperty.resolveWith<Color>(
-                                    (Set<MaterialState> states) {
+                                  color: WidgetStateProperty.resolveWith<Color>(
+                                    (Set<WidgetState> states) {
                                       // Alterna el color de fondo entre gris y blanco
                                       if (index.isOdd) {
-                                        return PlanificacionLast.getColor(item);
+                                        return OrdenList.getColor(item);
 
                                         //  getColorPriority(
                                         //     item.priority ?? '');
                                       }
-                                      return PlanificacionLast.getColor(item)
-                                          .withOpacity(0.9);
+                                      return OrdenList.getColor(item)
+                                          .withValues(alpha: 0.9);
                                       // getColorPriority(item.priority ?? '');
                                     },
                                   ),
                                   cells: [
                                     DataCell(TextButton(
                                       onPressed: () {
+                                        print(item.toJson());
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (conext) =>
-                                                    SeguimientoOrden(
-                                                        item: item)));
+                                                    ViewFactura(
+                                                        factura: item)));
                                       },
                                       child: const Text('CLICK!'),
                                     )),
-                                    DataCell(Text(item.userRegistroOrden ?? ''),
-                                        onTap: () {
-                                      settingContabilidad(item);
-                                    }, showEditIcon: true),
-                                    DataCell(Text((item.priority ?? ''))),
+                                    DataCell(Text(item.fullName ?? '')),
+                                    DataCell(
+                                        Text((item.estadoPrioritario ?? ''))),
                                     DataCell(
                                         Center(
                                           child: Text(
@@ -841,103 +742,39 @@ class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
                                     }),
                                     DataCell(Text(item.ficha ?? '')),
                                     DataCell(
-                                        Center(
-                                            child: Text(
-                                          '\$ ${getNumFormatedDouble(item.balance ?? '0')}',
-                                          style: TextStyle(
-                                              fontWeight:
-                                                  item.isValidateBalance == 't'
-                                                      ? FontWeight.bold
-                                                      : FontWeight.normal,
-                                              color: PlanificacionLast
-                                                  .getColorIsBalancePaid(item)),
-                                        )), onTap: () async {
-                                      await setIsBalancePaid(item);
-                                    }),
-                                    DataCell(
-                                        Center(
-                                            child: Text(item.llamada ?? '0')),
-                                        onTap: () {
-                                      if (item.llamada!.contains('0')) {
-                                      } else {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DialogReOrdenRecord(
-                                                      numOrden:
-                                                          item.numOrden!)),
-                                        );
-                                      }
-                                    }),
-                                    DataCell(
-                                      Text(item.comment != null &&
-                                              item.comment!.length > 25
-                                          ? '${item.comment!.substring(0, 25)}...'
-                                          : item.comment ?? ''),
+                                      Text(limitarTexto(
+                                          item.observaciones ?? 'N/A', 25)),
                                       onTap: () {
                                         utilShowMesenger(
-                                            context, item.comment ?? '',
-                                            title: 'Comentarios');
+                                            context, item.observaciones ?? '',
+                                            title: 'Nota De La Orden');
                                       },
                                     ),
+                                    DataCell(Text(item.fechaEntrega ?? '')),
                                     DataCell(
-                                      Text(
-                                        item.fechaEntrega ?? '',
-                                        style: TextStyle(
-                                            color: PlanificacionLast
-                                                    .getColorsAtradas(item)
-                                                ? Colors.black
-                                                : Colors.red,
-                                            fontWeight: PlanificacionLast
-                                                    .getColorsAtradas(item)
-                                                ? FontWeight.normal
-                                                : FontWeight.bold),
-                                      ),
-                                    ),
-                                    DataCell(
-                                        SizedBox(
-                                          width: 75,
-                                          child: Text(
-                                            item.nameLogo ?? '',
-                                            style: const TextStyle(
-                                                overflow:
-                                                    TextOverflow.ellipsis),
-                                          ),
-                                        ), onTap: () {
+                                        Text(limitarTexto(
+                                            item.nameLogo ?? '', 25)),
+                                        onTap: () {
                                       utilShowMesenger(
                                           context, item.nameLogo ?? '',
-                                          title: 'LOGO');
+                                          title: 'Nombre Del Logo');
                                     }),
-                                    DataCell(Text(item.statu ?? '')),
+                                    DataCell(Text(item.estadoEntrega ?? '')),
                                     DataCell(
-                                        SizedBox(
-                                          width: 70,
-                                          child: Text(item.cliente ?? '',
-                                              style: const TextStyle(
-                                                  overflow:
-                                                      TextOverflow.ellipsis)),
-                                        ), onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ScreenHistoriaClienteOrden(
-                                                    client:
-                                                        item.cliente ?? 'N/A')),
-                                      );
-                                    }, onLongPress: () {
-                                      utilShowMesenger(
-                                          context, item.cliente ?? '',
-                                          title: 'CLIENTE');
+                                        Text(limitarTexto(
+                                            item.cliente!.toJson().toString(),
+                                            25)), onTap: () {
+                                      utilShowMesenger(context,
+                                          item.cliente!.toJson().toString(),
+                                          title: 'Información del cliente');
                                     }),
-                                    DataCell(Text(item.clienteTelefono ?? '')),
-                                    DataCell(Text(item.fechaStart ?? '')),
+                                    DataCell(
+                                        Text(item.cliente!.telefono ?? '')),
+                                    DataCell(Text(item.fechaCreacion ?? '')),
                                     DataCell(TextButton(
                                       child: const Text('Eliminar',
                                           style: TextStyle(color: Colors.red)),
-                                      onPressed: () =>
-                                          deleleFromRecord(item, context),
+                                      onPressed: () {},
                                     ))
                                   ],
                                 );
@@ -948,140 +785,140 @@ class _ScreenReceptionEntregasState extends State<ScreenReceptionEntregas> {
                       ),
                     )
                   : const SizedBox(child: Text('No hay Datos')),
-              planificacionListFilter.isNotEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.only(bottom: 25),
-                      child: SizedBox(
-                        height: 30,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              const SizedBox(width: 15),
-                              BounceInDown(
-                                delay: const Duration(milliseconds: 50),
-                                child: Container(
-                                  height: 70,
-                                  decoration:
-                                      const BoxDecoration(color: Colors.white),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20),
-                                    child: Center(
-                                      child: Row(
-                                        children: [
-                                          const Text('TOTAL ORDEN : '),
-                                          const SizedBox(width: 15),
-                                          Text(
-                                              '${planificacionListFilter.length}',
-                                              style: const TextStyle(
-                                                  color: Colors.brown,
-                                                  fontWeight: FontWeight.bold)),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 15),
-                              BounceInDown(
-                                delay: const Duration(milliseconds: 100),
-                                child: Container(
-                                  height: 70,
-                                  decoration:
-                                      const BoxDecoration(color: Colors.white),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20),
-                                    child: Center(
-                                      child: Row(
-                                        children: [
-                                          const Text('POR ENTREGAR: '),
-                                          const SizedBox(width: 15),
-                                          Text(
-                                              PlanificacionLast
-                                                  .totalOrdenEntregar(
-                                                      planificacionListFilter),
-                                              style: const TextStyle(
-                                                  color: Colors.green,
-                                                  fontWeight: FontWeight.bold)),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 15),
-                              BounceInDown(
-                                delay: const Duration(milliseconds: 100),
-                                child: Container(
-                                  height: 70,
-                                  decoration: const BoxDecoration(
-                                      color: colorsAd, boxShadow: [shadow]),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20),
-                                    child: Center(
-                                      child: TextButton(
-                                          onPressed: () {
-                                            planificacionListFilter =
-                                                PlanificacionLast
-                                                    .getTotalAtrasadaList(
-                                                        planificacionList);
-                                            setState(() {});
-                                          },
-                                          child: Row(
-                                            children: [
-                                              const Text('ATRASADAS: ',
-                                                  style: TextStyle(
-                                                      color: Colors.white)),
-                                              const SizedBox(width: 15),
-                                              Text(
-                                                  PlanificacionLast
-                                                      .getTotalAtrasada(
-                                                          planificacionListFilter),
-                                                  style: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                            ],
-                                          )),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 15),
-                              BounceInDown(
-                                delay: const Duration(milliseconds: 100),
-                                child: Container(
-                                  height: 70,
-                                  decoration:
-                                      const BoxDecoration(color: Colors.white),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20),
-                                    child: Center(
-                                      child: Row(
-                                        children: [
-                                          const Text('BALANCE: '),
-                                          const SizedBox(width: 15),
-                                          Text(
-                                              '\$ ${getNumFormatedDouble(PlanificacionLast.getBalanceTotal(planificacionListFilter))}',
-                                              style: const TextStyle(
-                                                  color: Colors.blue,
-                                                  fontWeight: FontWeight.bold)),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  : const SizedBox(),
+              // planificacionListFilter.isNotEmpty
+              //     ? Padding(
+              //         padding: const EdgeInsets.only(bottom: 25),
+              //         child: SizedBox(
+              //           height: 30,
+              //           child: SingleChildScrollView(
+              //             scrollDirection: Axis.horizontal,
+              //             child: Row(
+              //               children: [
+              //                 const SizedBox(width: 15),
+              //                 BounceInDown(
+              //                   delay: const Duration(milliseconds: 50),
+              //                   child: Container(
+              //                     height: 70,
+              //                     decoration:
+              //                         const BoxDecoration(color: Colors.white),
+              //                     child: Padding(
+              //                       padding: const EdgeInsets.symmetric(
+              //                           horizontal: 20),
+              //                       child: Center(
+              //                         child: Row(
+              //                           children: [
+              //                             const Text('TOTAL ORDEN : '),
+              //                             const SizedBox(width: 15),
+              //                             Text(
+              //                                 '${planificacionListFilter.length}',
+              //                                 style: const TextStyle(
+              //                                     color: Colors.brown,
+              //                                     fontWeight: FontWeight.bold)),
+              //                           ],
+              //                         ),
+              //                       ),
+              //                     ),
+              //                   ),
+              //                 ),
+              //                 const SizedBox(width: 15),
+              //                 BounceInDown(
+              //                   delay: const Duration(milliseconds: 100),
+              //                   child: Container(
+              //                     height: 70,
+              //                     decoration:
+              //                         const BoxDecoration(color: Colors.white),
+              //                     child: Padding(
+              //                       padding: const EdgeInsets.symmetric(
+              //                           horizontal: 20),
+              //                       child: Center(
+              //                         child: Row(
+              //                           children: [
+              //                             const Text('POR ENTREGAR: '),
+              //                             const SizedBox(width: 15),
+              //                             Text(
+              //                                 PlanificacionLast
+              //                                     .totalOrdenEntregar(
+              //                                         planificacionListFilter),
+              //                                 style: const TextStyle(
+              //                                     color: Colors.green,
+              //                                     fontWeight: FontWeight.bold)),
+              //                           ],
+              //                         ),
+              //                       ),
+              //                     ),
+              //                   ),
+              //                 ),
+              //                 const SizedBox(width: 15),
+              //                 BounceInDown(
+              //                   delay: const Duration(milliseconds: 100),
+              //                   child: Container(
+              //                     height: 70,
+              //                     decoration: const BoxDecoration(
+              //                         color: colorsAd, boxShadow: [shadow]),
+              //                     child: Padding(
+              //                       padding: const EdgeInsets.symmetric(
+              //                           horizontal: 20),
+              //                       child: Center(
+              //                         child: TextButton(
+              //                             onPressed: () {
+              //                               planificacionListFilter =
+              //                                   PlanificacionLast
+              //                                       .getTotalAtrasadaList(
+              //                                           planificacionList);
+              //                               setState(() {});
+              //                             },
+              //                             child: Row(
+              //                               children: [
+              //                                 const Text('ATRASADAS: ',
+              //                                     style: TextStyle(
+              //                                         color: Colors.white)),
+              //                                 const SizedBox(width: 15),
+              //                                 Text(
+              //                                     PlanificacionLast
+              //                                         .getTotalAtrasada(
+              //                                             planificacionListFilter),
+              //                                     style: const TextStyle(
+              //                                         color: Colors.white,
+              //                                         fontWeight:
+              //                                             FontWeight.bold)),
+              //                               ],
+              //                             )),
+              //                       ),
+              //                     ),
+              //                   ),
+              //                 ),
+              //                 const SizedBox(width: 15),
+              //                 BounceInDown(
+              //                   delay: const Duration(milliseconds: 100),
+              //                   child: Container(
+              //                     height: 70,
+              //                     decoration:
+              //                         const BoxDecoration(color: Colors.white),
+              //                     child: Padding(
+              //                       padding: const EdgeInsets.symmetric(
+              //                           horizontal: 20),
+              //                       child: Center(
+              //                         child: Row(
+              //                           children: [
+              //                             const Text('BALANCE: '),
+              //                             const SizedBox(width: 15),
+              //                             Text(
+              //                                 '\$ ${getNumFormatedDouble(PlanificacionLast.getBalanceTotal(planificacionListFilter))}',
+              //                                 style: const TextStyle(
+              //                                     color: Colors.blue,
+              //                                     fontWeight: FontWeight.bold)),
+              //                           ],
+              //                         ),
+              //                       ),
+              //                     ),
+              //                   ),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //         ),
+              //       )
+              //     : const SizedBox(),
               identy(context)
             ],
           ),

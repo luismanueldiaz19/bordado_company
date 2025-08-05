@@ -114,16 +114,16 @@ class CustomSearchDelegate extends SearchDelegate<List<PlanificacionLast>> {
                     rows: results
                         .map(
                           (item) => DataRow(
-                            color: MaterialStateProperty.resolveWith(
+                            color: WidgetStateProperty.resolveWith(
                                 (states) => PlanificacionLast.getColor(item)),
                             cells: [
                               DataCell(TextButton(
                                 onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (conext) =>
-                                              SeguimientoOrden(item: item)));
+                                  // Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //         builder: (conext) =>
+                                  //             SeguimientoOrden(item: item)));
                                 },
                                 child: const Text('CLICK!'),
                               )),

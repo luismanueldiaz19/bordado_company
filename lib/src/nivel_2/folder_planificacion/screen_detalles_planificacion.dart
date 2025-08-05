@@ -174,7 +174,7 @@ class _DetallesPlanificacionState extends State<DetallesPlanificacion> {
                             shape: PrettyQrSmoothSymbol(
                                 color: Colors.black, roundFactor: 1),
                             image: PrettyQrDecorationImage(
-                                image: AssetImage('assets/loro.png'),
+                                image: AssetImage(logoApp),
                                 position:
                                     PrettyQrDecorationImagePosition.embedded),
                           ),

@@ -96,11 +96,17 @@ class _SignInLoginState extends State<SignInLogin> {
                 // mainAxisSize: MainAxisSize.max,
                 children: [
                   const SizedBox(height: 20, width: double.infinity),
+                  Padding(
+                    padding: const EdgeInsets.all(25.0),
+                    child: SizedBox(
+                        height: size.height * 0.30,
+                        child: Image.asset(logoApp, fit: BoxFit.cover)),
+                  ),
 
-                  SizedBox(
-                      height: size.height * 0.30,
-                      child: Lottie.asset('animation/login_long.json',
-                          repeat: true, reverse: true, fit: BoxFit.cover)),
+                  // SizedBox(
+                  //     height: size.height * 0.30,
+                  //     child: Lottie.asset('animation/login_long.json',
+                  //         repeat: true, reverse: true, fit: BoxFit.cover)),
                   SlideInLeft(
                     child: Container(
                       decoration: BoxDecoration(
@@ -158,7 +164,7 @@ class _SignInLoginState extends State<SignInLogin> {
                         // style: styleButton,
                         style: ButtonStyle(
                             backgroundColor: WidgetStateProperty.resolveWith(
-                                (states) => colorsBlueTurquesa),
+                                (states) => colorsAd),
                             shape: WidgetStateProperty.resolveWith((states) =>
                                 const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.zero))),

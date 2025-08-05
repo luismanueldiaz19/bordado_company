@@ -117,7 +117,7 @@ EmpresaLocal currentEmpresa = EmpresaLocal(
     adressEmpressa:
         'Plaza Zona Rosa, Plaza Olimpica, Santiago de los caballeros, República Dominicana',
     celularEmpresa: '829-971-3536',
-    nombreEmpresa: 'Tatami bordados',
+    nombreEmpresa: 'Tatami Bordados',
     oficinaEmpres: '(829)-971-3536',
     rncEmpresa: '132086198',
     telefonoEmpresa: '(829)-581-3536',

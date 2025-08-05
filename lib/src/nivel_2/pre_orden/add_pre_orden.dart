@@ -408,6 +408,9 @@ class _AddPreOrdenState extends State<AddPreOrden> {
 
                             final item = ItemProd(
                               cant: int.parse(controllerCantidad.text),
+                              precioFinal: double.parse(
+                                      productPicked!.originalPrice ?? '0')
+                                  .toStringAsFixed(2),
                               departamentos: listDepartTemp
                                   .map((e) => int.tryParse(e.id ?? '') ?? 0)
                                   .where((id) => id > 0)
@@ -660,6 +663,7 @@ class ItemProd {
   final String detallesProductos;
   final String nota;
   final String estadoProduccion;
+  final String? precioFinal;
   final List<int> departamentos;
 
   ItemProd({
@@ -669,6 +673,7 @@ class ItemProd {
     required this.nota,
     required this.estadoProduccion,
     required this.departamentos,
+    required this.precioFinal,
   });
 
   // Para crear una instancia desde un JSON
@@ -679,6 +684,7 @@ class ItemProd {
       detallesProductos: json['detalles_productos'],
       nota: json['nota'],
       estadoProduccion: json['estado_produccion'],
+      precioFinal: json['precio_final'],
       departamentos: List<int>.from(json['departamentos']),
     );
   }
@@ -692,6 +698,7 @@ class ItemProd {
       'nota': nota,
       'estado_produccion': estadoProduccion,
       'departamentos': departamentos,
+      'precio_final': precioFinal,
     };
   }
 }
